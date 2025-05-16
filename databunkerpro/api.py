@@ -76,11 +76,11 @@ class DatabunkerproAPI:
                 if result.get("status"):
                     return result
                 else:
-                    raise Exception(result.get("message", "API request failed"))
+                    return {"status": "error", "message": result.get("message", "API request failed")}
 
             return result
         except requests.exceptions.RequestException as e:
-            raise Exception(f"Error making request: {str(e)}")
+            return {"status": "error", "message": f"Error making request: {str(e)}"}
 
     def create_user(
         self,

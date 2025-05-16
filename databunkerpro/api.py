@@ -76,7 +76,10 @@ class DatabunkerproAPI:
                 if result.get("status"):
                     return result
                 else:
-                    return {"status": "error", "message": result.get("message", "API request failed")}
+                    return {
+                        "status": "error",
+                        "message": result.get("message", "API request failed"),
+                    }
 
             return result
         except requests.exceptions.RequestException as e:

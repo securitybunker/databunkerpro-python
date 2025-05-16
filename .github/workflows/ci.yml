@@ -26,20 +26,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
     
-    - name: Run tests with coverage
+    - name: Run tests
       env:
         DATABUNKER_API_URL: ${{ secrets.DATABUNKER_API_URL || 'https://pro.databunker.org' }}
         DATABUNKER_API_TOKEN: ${{ secrets.DATABUNKER_API_TOKEN }}
         DATABUNKER_TENANT_NAME: ${{ secrets.DATABUNKER_TENANT_NAME }}
       run: |
-        pytest --cov=databunkerpro --cov-report=xml tests/ -v
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage.xml
-        fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}
+        pytest tests/ -v
 
   lint:
     runs-on: ubuntu-latest

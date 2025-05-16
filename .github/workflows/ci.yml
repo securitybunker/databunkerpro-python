@@ -55,9 +55,6 @@ jobs:
     - name: Run isort
       run: isort --check-only .
     
-    - name: Install type stubs
-      run: pip install types-requests
-
     - name: Run mypy
       run: mypy databunkerpro/
 

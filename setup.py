@@ -35,6 +35,7 @@ setup(
             "black>=21.0",
             "isort>=5.0",
             "mypy>=0.910",
+            "types-requests",
         ],
     },
 )

@@ -13,7 +13,7 @@ pip install databunkerpro
 Or install directly from GitHub:
 
 ```bash
-pip install git+https://github.com/yourusername/databunkerpro-python.git
+pip install git+https://github.com/securitybunker/databunkerpro-python.git
 ```
 
 ## Quick Start
@@ -67,7 +67,7 @@ To set up the development environment:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/databunkerpro-python.git
+git clone https://github.com/securitybunker/databunkerpro-python.git
 cd databunkerpro-python
 ```
 
@@ -97,8 +97,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-If you encounter any issues or have questions, please [open an issue](https://github.com/yourusername/databunkerpro-python/issues) on GitHub.
+If you encounter any issues or have questions, please [open an issue](https://github.com/securitybunker/databunkerpro-python/issues) on GitHub.
 
 ## API Documentation
 
-For detailed API documentation, please visit the [DatabunkerPro API Documentation](https://docs.databunker.org).
+For detailed API documentation, please visit the [DatabunkerPro API Documentation](https://databunker.org/databunker-pro-docs/introduction/).

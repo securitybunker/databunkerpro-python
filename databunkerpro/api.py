@@ -70,7 +70,7 @@ class DatabunkerproAPI:
         try:
             response = requests.request(method, url, headers=headers, data=body)
             response.raise_for_status()
-            result = response.json()
+            result: Dict[str, Any] = response.json()
 
             if not response.ok:
                 if result.get("status"):

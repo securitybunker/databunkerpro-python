@@ -50,7 +50,8 @@ api.update_user("email", "user@example.com", update_data)
 
 # Create a token for sensitive data
 token_result = api.create_token("creditcard", "4111111111111111")
-print(f"Created token: {token_result['token']}")
+print(f"Created token in base format (credit card): {token_result['tokenbase']}")
+print(f"Created token in uuid format: {token_result['tokenuuid']}")
 ```
 
 ## Features

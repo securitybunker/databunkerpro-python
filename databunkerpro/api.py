@@ -8,10 +8,13 @@ import requests
 import json
 from datetime import datetime
 
+
 class DatabunkerproAPI:
     """Main client class for interacting with the DatabunkerPro API."""
 
-    def __init__(self, base_url: str, x_bunker_token: str = "", x_bunker_tenant: str = ""):
+    def __init__(
+        self, base_url: str, x_bunker_token: str = "", x_bunker_tenant: str = ""
+    ):
         """
         Initialize the DatabunkerPro API client.
 
@@ -20,12 +23,17 @@ class DatabunkerproAPI:
             x_bunker_token (str, optional): The X-Bunker-Token for authentication
             x_bunker_tenant (str, optional): The X-Bunker-Tenant identifier
         """
-        self.base_url = base_url.rstrip('/')
+        self.base_url = base_url.rstrip("/")
         self.x_bunker_token = x_bunker_token
         self.x_bunker_tenant = x_bunker_tenant
 
-    def _make_request(self, endpoint: str, method: str = "POST", data: Optional[Dict[str, Any]] = None,
-                     request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _make_request(
+        self,
+        endpoint: str,
+        method: str = "POST",
+        data: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Make a request to the DatabunkerPro API.
 
@@ -41,9 +49,7 @@ class DatabunkerproAPI:
         Raises:
             Exception: If the API request fails
         """
-        headers = {
-            "Content-Type": "application/json"
-        }
+        headers = {"Content-Type": "application/json"}
 
         if self.x_bunker_token:
             headers["X-Bunker-Token"] = self.x_bunker_token
@@ -75,8 +81,12 @@ class DatabunkerproAPI:
         except requests.exceptions.RequestException as e:
             raise Exception(f"Error making request: {str(e)}")
 
-    def create_user(self, profile: Dict[str, Any], options: Optional[Dict[str, Any]] = None,
-                   request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_user(
+        self,
+        profile: Dict[str, Any],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Create a new user in DatabunkerPro.
 
@@ -93,8 +103,12 @@ class DatabunkerproAPI:
             data.update(options)
         return self._make_request("UserCreate", "POST", data, request_metadata)
 
-    def get_user(self, mode: str, identity: str,
-                request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_user(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Get user information from DatabunkerPro.
 
@@ -106,10 +120,17 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("UserGet", "POST", {"mode": mode, "identity": identity}, request_metadata)
+        return self._make_request(
+            "UserGet", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
 
-    def update_user(self, mode: str, identity: str, profile: Dict[str, Any],
-                   request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def update_user(
+        self,
+        mode: str,
+        identity: str,
+        profile: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Update user information in DatabunkerPro.
 
@@ -122,12 +143,19 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("UserUpdate", "POST",
-                                {"mode": mode, "identity": identity, "profile": profile},
-                                request_metadata)
+        return self._make_request(
+            "UserUpdate",
+            "POST",
+            {"mode": mode, "identity": identity, "profile": profile},
+            request_metadata,
+        )
 
-    def delete_user(self, mode: str, identity: str,
-                   request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def delete_user(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Delete a user from DatabunkerPro.
 
@@ -139,9 +167,13 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("UserDelete", "POST", {"mode": mode, "identity": identity}, request_metadata)
+        return self._make_request(
+            "UserDelete", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
 
-    def get_system_stats(self, request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_system_stats(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Get system statistics from DatabunkerPro.
 
@@ -151,11 +183,17 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response containing system statistics
         """
-        return self._make_request("SystemGetSystemStats", "POST", None, request_metadata)
+        return self._make_request(
+            "SystemGetSystemStats", "POST", None, request_metadata
+        )
 
-    def create_token(self, token_type: str, record: str,
-                    options: Optional[Dict[str, Any]] = None,
-                    request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def create_token(
+        self,
+        token_type: str,
+        record: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         Create a token for sensitive data.
 
@@ -173,8 +211,9 @@ class DatabunkerproAPI:
             data.update(options)
         return self._make_request("TokenCreate", "POST", data, request_metadata)
 
-    def get_token(self, token: str,
-                 request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_token(
+        self, token: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Get token information from DatabunkerPro.
 
@@ -185,10 +224,13 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("TokenGet", "POST", {"token": token}, request_metadata)
+        return self._make_request(
+            "TokenGet", "POST", {"token": token}, request_metadata
+        )
 
-    def delete_token(self, token: str,
-                    request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def delete_token(
+        self, token: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Delete a token from DatabunkerPro.
 
@@ -199,4 +241,6 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("TokenDelete", "POST", {"token": token}, request_metadata) 
+        return self._make_request(
+            "TokenDelete", "POST", {"token": token}, request_metadata
+        )

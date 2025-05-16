@@ -3,10 +3,11 @@ DatabunkerPro API Client
 Main implementation of the DatabunkerPro API client.
 """
 
-from typing import Dict, Any, Optional, List, Union
-import requests
 import json
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Union
+
+import requests
 
 
 class DatabunkerproAPI:

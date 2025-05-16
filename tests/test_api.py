@@ -2,10 +2,12 @@
 Tests for the DatabunkerPro API client.
 """
 
-import unittest
 import os
 import random
+import unittest
+
 import requests
+
 from databunkerpro import DatabunkerproAPI
 
 

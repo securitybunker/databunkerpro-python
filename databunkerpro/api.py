@@ -107,6 +107,52 @@ class DatabunkerproAPI:
             data.update(options)
         return self._make_request("UserCreate", "POST", data, request_metadata)
 
+    def create_users_bulk(
+        self,
+        records: List[Dict[str, Any]],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create multiple users in bulk with their profiles and group information.
+
+        Args:
+            records (List[Dict[str, Any]]): List of user records to create, each containing:
+                - profile (Dict[str, Any]): User profile data
+                - groupname (str | int, optional): Group name or ID
+                - groupid (int, optional): Group ID
+                - rolename (str | int, optional): Role name or ID
+                - roleid (int, optional): Role ID
+            options (Dict[str, Any], optional): Global options for all users:
+                - finaltime (str, optional): Global expiration time for all users
+                - slidingtime (str, optional): Global sliding time period for all users
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response containing information about created users
+
+        Example:
+            >>> api.create_users_bulk([
+            ...     {
+            ...         "profile": {"email": "user1@example.com", "name": "User One"},
+            ...         "groupname": "premium",
+            ...         "rolename": "admin"
+            ...     },
+            ...     {
+            ...         "profile": {"email": "user2@example.com", "name": "User Two"},
+            ...         "groupid": 123,
+            ...         "rolename": "team-member"
+            ...     }
+            ... ], {
+            ...     "finaltime": "2024-12-31",
+            ...     "slidingtime": "30d"
+            ... })
+        """
+        data = {"records": records}
+        if options:
+            data.update(options)
+        return self._make_request("UserCreateBulk", "POST", data, request_metadata)
+
     def get_user(
         self,
         mode: str,

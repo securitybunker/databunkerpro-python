@@ -73,6 +73,46 @@ class TestDatabunkerproAPI(unittest.TestCase):
         self.assertIn("token", result)
         return user_data["email"]
 
+    def test_create_users_bulk(self):
+        """Test bulk user creation."""
+        # Create test data for multiple users
+        users_data = [
+            {
+                "profile": {
+                    "email": f"test{random.randint(1000, 999999)}@example.com",
+                    "name": f"Test User {random.randint(1000, 999999)}",
+                    "phone": str(random.randint(1000, 999999)),
+                },
+                # "groupname": "test-group",
+                # "rolename": "test-role"
+            },
+            {
+                "profile": {
+                    "email": f"test{random.randint(1000, 999999)}@example.com",
+                    "name": f"Test User {random.randint(1000, 999999)}",
+                    "phone": str(random.randint(1000, 999999)),
+                },
+                # "groupid": 1,
+                # "roleid": 1
+            }
+        ]
+        # Test bulk creation with global options
+        options = {
+            "finaltime": "1y",
+            "slidingtime": "30d"
+        }
+        result = self.api.create_users_bulk(users_data, options)
+        self.assertIsInstance(result, dict)
+        self.assertEqual(result.get("status"), "ok")
+        self.assertIn("created", result)
+        self.assertEqual(len(result["created"]), len(users_data))
+        # Verify each created user
+        for user_record in result["created"]:
+            self.assertIn("token", user_record)
+            self.assertIn("profile", user_record)
+            self.assertEqual(user_record["profile"]["email"], user_record["profile"]["email"])
+        return [user["profile"]["email"] for user in users_data]
+
     def test_get_user(self):
         """Test user retrieval."""
         email = self.test_create_user()

@@ -94,13 +94,10 @@ class TestDatabunkerproAPI(unittest.TestCase):
                 },
                 # "groupid": 1,
                 # "roleid": 1
-            }
+            },
         ]
         # Test bulk creation with global options
-        options = {
-            "finaltime": "1y",
-            "slidingtime": "30d"
-        }
+        options = {"finaltime": "1y", "slidingtime": "30d"}
         result = self.api.create_users_bulk(users_data, options)
         self.assertIsInstance(result, dict)
         self.assertEqual(result.get("status"), "ok")
@@ -110,11 +107,19 @@ class TestDatabunkerproAPI(unittest.TestCase):
         for user_record in result["created"]:
             self.assertIn("token", user_record)
             self.assertIn("profile", user_record)
-            self.assertEqual(user_record["profile"]["email"], user_record["profile"]["email"])
+            self.assertEqual(
+                user_record["profile"]["email"], user_record["profile"]["email"]
+            )
             user_record = self.api.get_user("email", user_record["profile"]["email"])
-            self.assertEqual(user_record["profile"]["email"], user_record["profile"]["email"])
-            self.assertEqual(user_record["profile"]["name"], user_record["profile"]["name"])
-            self.assertEqual(user_record["profile"]["phone"], user_record["profile"]["phone"])
+            self.assertEqual(
+                user_record["profile"]["email"], user_record["profile"]["email"]
+            )
+            self.assertEqual(
+                user_record["profile"]["name"], user_record["profile"]["name"]
+            )
+            self.assertEqual(
+                user_record["profile"]["phone"], user_record["profile"]["phone"]
+            )
         return [user["profile"]["email"] for user in users_data]
 
     def test_get_user(self):

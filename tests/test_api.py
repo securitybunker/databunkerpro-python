@@ -111,6 +111,10 @@ class TestDatabunkerproAPI(unittest.TestCase):
             self.assertIn("token", user_record)
             self.assertIn("profile", user_record)
             self.assertEqual(user_record["profile"]["email"], user_record["profile"]["email"])
+            user_record = self.api.get_user("email", user_record["profile"]["email"])
+            self.assertEqual(user_record["profile"]["email"], user_record["profile"]["email"])
+            self.assertEqual(user_record["profile"]["name"], user_record["profile"]["name"])
+            self.assertEqual(user_record["profile"]["phone"], user_record["profile"]["phone"])
         return [user["profile"]["email"] for user in users_data]
 
     def test_get_user(self):

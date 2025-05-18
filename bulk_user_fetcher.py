@@ -17,7 +17,7 @@ stats = {"total_fetched": 0, "start_time": None, "errors": 0}
 async def fetch_user(api, token):
     """Fetch a single user record using DatabunkerproAPI."""
     try:
-        result = api.get_user(token)
+        result = api.get_user("token", token)
         if result and result.get("status") == "ok":
             stats["total_fetched"] += 1
             return result

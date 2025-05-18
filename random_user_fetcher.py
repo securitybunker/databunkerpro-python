@@ -28,7 +28,7 @@ def fetch_random_user(api, tokens):
 
     token = random.choice(tokens)
     try:
-        result = api.get_user(token)
+        result = api.get_user("token", token)
         if result and result.get("status") == "ok":
             return result
         else:

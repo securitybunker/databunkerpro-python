@@ -67,10 +67,8 @@ async def main():
     if not all([api_token]):
         print("Error: DATABUNKER_API_TOKEN environment variable must be set")
         return
-
     # Initialize API client
     api = DatabunkerproAPI(api_url, api_token, tenant_name)
-
     # Read tokens from file
     try:
         with open("user_tokens.txt", "r") as f:
@@ -78,14 +76,11 @@ async def main():
     except FileNotFoundError:
         print("Error: user_tokens.txt not found")
         return
-
     if not tokens:
         print("No tokens found in user_tokens.txt")
         return
-
-    print(f"Found {len(tokens)} tokens to process")
+    print(f"Found {len(tokens)} user tokens to process")
     stats["start_time"] = time.time()
-
     # Process tokens in batches
     await fetch_users_batch(api, tokens)
     print_final_stats()

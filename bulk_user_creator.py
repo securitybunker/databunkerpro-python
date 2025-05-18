@@ -5,7 +5,7 @@ from databunkerpro import DatabunkerproAPI
 
 # Get credentials from environment
 api_url = os.getenv("DATABUNKER_API_URL", "http://localhost")
-api_token = os.getenv("DATABUNKER_API_TOKEN", "9e8eebf1-060d-e3be-51f6-1d5da2d44f5b")
+api_token = os.getenv("DATABUNKER_API_TOKEN", "dcc33285-4bfd-6e3b-eeb8-05e879afa943")
 tenant_name = os.getenv("DATABUNKER_TENANT_NAME", "")
 print(api_token)
 

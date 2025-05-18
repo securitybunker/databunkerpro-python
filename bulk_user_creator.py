@@ -52,8 +52,8 @@ def create_bulk_users(api, num_batches=250, users_per_batch=4000):
                 )
                 all_tokens.extend(batch_tokens)
                 # Save tokens to file after each batch, one token per line
-                with open("user_tokens.txt", "w") as f:
-                    f.write("\n".join(all_tokens))
+                with open("user_tokens.txt", "a") as f:
+                    f.write("\n".join(batch_tokens) + "\n")
                 # print(f"Created {len(created_users)} users in batch {batch + 1}")
                 # print(f"Saved {len(batch_tokens)} tokens to user_tokens.txt")
         else:

@@ -3,17 +3,18 @@ import random
 from databunkerpro import DatabunkerproAPI
 
 # Get credentials from environment
-api_url = os.getenv("DATABUNKER_API_URL", "https://pro.databunker.org")
-api_token = os.getenv("DATABUNKER_API_TOKEN", "")
+api_url = os.getenv("DATABUNKER_API_URL", "http://localhost")
+api_token = os.getenv("DATABUNKER_API_TOKEN", "9e8eebf1-060d-e3be-51f6-1d5da2d44f5b")
 tenant_name = os.getenv("DATABUNKER_TENANT_NAME", "")
+print(api_token)
 
 def generate_random_user_data():
     """Generate random user data with 120 fields."""
+    userid = f"{random.randint(1000, 99999999999)}"
     # Base fields that are always present
     base_fields = {
-        "email": f"user{random.randint(1000, 999999)}@example.com",
-        "name": f"User {random.randint(1000, 999999)}",
-        "phone": f"+1{random.randint(1000000000, 9999999999)}",
+        "email": f"user{userid}@example.com",
+        "name": f"User {userid}",
     }
     
     # Additional fields to reach 120 fields
@@ -61,17 +62,14 @@ def create_bulk_users(api, num_batches=100, users_per_batch=100):
     return all_tokens
 
 def main():
-    
-    if not all([api_token, tenant_name]):
+    if not all([api_token]):
         print("Error: DATABUNKER_API_TOKEN and DATABUNKER_TENANT_NAME environment variables must be set")
         return
-    
     # Initialize API client
     api = DatabunkerproAPI(api_url, api_token, tenant_name)
-    
     # Create users in bulk
     tokens = create_bulk_users(api)
     print(f"\nTotal tokens saved: {len(tokens)}")
 
 if __name__ == "__main__":
-    main() 
+    main()

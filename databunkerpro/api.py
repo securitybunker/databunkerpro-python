@@ -1591,7 +1591,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("LegalBasisListAgreements", "POST", None, request_metadata)
+        return self._make_request(
+            "LegalBasisListAgreements", "POST", None, request_metadata
+        )
 
     def delete_legal_basis(
         self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
@@ -1606,7 +1608,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("LegalBasisDelete", "POST", {"brief": brief}, request_metadata)
+        return self._make_request(
+            "LegalBasisDelete", "POST", {"brief": brief}, request_metadata
+        )
 
     # Agreement Management
     def cancel_agreement(
@@ -1629,7 +1633,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AgreementCancel", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+            "AgreementCancel",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
         )
 
     def request_agreement_cancellation(
@@ -1652,7 +1659,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AgreementCancelRequest", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+            "AgreementCancelRequest",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
         )
 
     def get_user_agreement(
@@ -1675,7 +1685,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AgreementGet", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+            "AgreementGet",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
         )
 
     def list_user_agreements(
@@ -1696,7 +1709,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AgreementListUserAgreements", "POST", {"mode": mode, "identity": identity}, request_metadata
+            "AgreementListUserAgreements",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
         )
 
     def revoke_all_agreements(
@@ -1712,7 +1728,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("AgreementRevokeAll", "POST", {"brief": brief}, request_metadata)
+        return self._make_request(
+            "AgreementRevokeAll", "POST", {"brief": brief}, request_metadata
+        )
 
     # Processing Activity Management
     def list_processing_activities(
@@ -1727,7 +1745,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ProcessingActivityListActivities", "POST", None, request_metadata)
+        return self._make_request(
+            "ProcessingActivityListActivities", "POST", None, request_metadata
+        )
 
     def create_processing_activity(
         self,
@@ -1744,7 +1764,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ProcessingActivityCreate", "POST", options, request_metadata)
+        return self._make_request(
+            "ProcessingActivityCreate", "POST", options, request_metadata
+        )
 
     def update_processing_activity(
         self,
@@ -1764,7 +1786,9 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         data = {"activity": activity, **options}
-        return self._make_request("ProcessingActivityUpdate", "POST", data, request_metadata)
+        return self._make_request(
+            "ProcessingActivityUpdate", "POST", data, request_metadata
+        )
 
     def delete_processing_activity(
         self, activity: str, request_metadata: Optional[Dict[str, Any]] = None
@@ -1779,7 +1803,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ProcessingActivityDelete", "POST", {"activity": activity}, request_metadata)
+        return self._make_request(
+            "ProcessingActivityDelete", "POST", {"activity": activity}, request_metadata
+        )
 
     def link_processing_activity_to_legal_basis(
         self,
@@ -1799,7 +1825,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ProcessingActivityLinkLegalBasis", "POST", {"activity": activity, "brief": brief}, request_metadata
+            "ProcessingActivityLinkLegalBasis",
+            "POST",
+            {"activity": activity, "brief": brief},
+            request_metadata,
         )
 
     def unlink_processing_activity_from_legal_basis(
@@ -1820,7 +1849,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ProcessingActivityUnlinkLegalBasis", "POST", {"activity": activity, "brief": brief}, request_metadata
+            "ProcessingActivityUnlinkLegalBasis",
+            "POST",
+            {"activity": activity, "brief": brief},
+            request_metadata,
         )
 
     # Enhanced Connector Management
@@ -1836,7 +1868,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ConnectorListSupportedConnectors", "POST", None, request_metadata)
+        return self._make_request(
+            "ConnectorListSupportedConnectors", "POST", None, request_metadata
+        )
 
     def list_connectors_with_pagination(
         self,
@@ -1856,7 +1890,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ConnectorListConnectors", "POST", {"offset": offset, "limit": limit}, request_metadata
+            "ConnectorListConnectors",
+            "POST",
+            {"offset": offset, "limit": limit},
+            request_metadata,
         )
 
     def validate_connector_connectivity(
@@ -1874,7 +1911,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ConnectorValidateConnectivity", "POST", options, request_metadata)
+        return self._make_request(
+            "ConnectorValidateConnectivity", "POST", options, request_metadata
+        )
 
     def get_table_metadata(
         self,
@@ -1891,7 +1930,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("ConnectorGetTableMetaData", "POST", options, request_metadata)
+        return self._make_request(
+            "ConnectorGetTableMetaData", "POST", options, request_metadata
+        )
 
     def connector_get_user_data(
         self,
@@ -1913,7 +1954,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ConnectorGetUserData", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+            "ConnectorGetUserData",
+            "POST",
+            {"mode": mode, "identity": identity, "connectorid": connector_id},
+            request_metadata,
         )
 
     def connector_get_user_extra_data(
@@ -1936,7 +1980,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ConnectorGetUserExtraData", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+            "ConnectorGetUserExtraData",
+            "POST",
+            {"mode": mode, "identity": identity, "connectorid": connector_id},
+            request_metadata,
         )
 
     def connector_delete_user(
@@ -1959,7 +2006,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "ConnectorDeleteUser", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+            "ConnectorDeleteUser",
+            "POST",
+            {"mode": mode, "identity": identity, "connectorid": connector_id},
+            request_metadata,
         )
 
     # Enhanced Group Management
@@ -1995,7 +2045,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "GroupListUserGroups", "POST", {"mode": mode, "identity": identity}, request_metadata
+            "GroupListUserGroups",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
         )
 
     def remove_user_from_group(
@@ -2018,7 +2071,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "GroupDeleteUser", "POST", {"mode": mode, "identity": identity, "groupid": group_id}, request_metadata
+            "GroupDeleteUser",
+            "POST",
+            {"mode": mode, "identity": identity, "groupid": group_id},
+            request_metadata,
         )
 
     def add_user_to_group(
@@ -2107,7 +2163,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AuditListUserEvents", "POST", {"mode": mode, "identity": identity, "offset": offset, "limit": limit}, request_metadata
+            "AuditListUserEvents",
+            "POST",
+            {"mode": mode, "identity": identity, "offset": offset, "limit": limit},
+            request_metadata,
         )
 
     def get_audit_event(
@@ -2124,7 +2183,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "AuditGetEvent", "POST", {"auditeventuuid": audit_event_uuid}, request_metadata
+            "AuditGetEvent",
+            "POST",
+            {"auditeventuuid": audit_event_uuid},
+            request_metadata,
         )
 
     # Enhanced Tenant Management
@@ -2146,7 +2208,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "TenantListTenants", "POST", {"offset": offset, "limit": limit}, request_metadata
+            "TenantListTenants",
+            "POST",
+            {"offset": offset, "limit": limit},
+            request_metadata,
         )
 
     # Enhanced Role Management
@@ -2168,7 +2233,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "RoleLinkPolicy", "POST", {"rolename": role_name, "policyname": policy_name}, request_metadata
+            "RoleLinkPolicy",
+            "POST",
+            {"rolename": role_name, "policyname": policy_name},
+            request_metadata,
         )
 
     # Enhanced Policy Management
@@ -2184,7 +2252,9 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request("PolicyListAllPolicies", "POST", None, request_metadata)
+        return self._make_request(
+            "PolicyListAllPolicies", "POST", None, request_metadata
+        )
 
     # Bulk Operations
     def bulk_list_unlock(
@@ -2221,7 +2291,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "BulkListUsers", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+            "BulkListUsers",
+            "POST",
+            {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit},
+            request_metadata,
         )
 
     def bulk_list_group_users(
@@ -2272,7 +2345,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "BulkListUserRequests", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+            "BulkListUserRequests",
+            "POST",
+            {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit},
+            request_metadata,
         )
 
     def bulk_list_audit_events(
@@ -2295,7 +2371,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "BulkListAuditEvents", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+            "BulkListAuditEvents",
+            "POST",
+            {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit},
+            request_metadata,
         )
 
     def bulk_list_tokens(
@@ -2316,7 +2395,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "BulkListTokens", "POST", {"unlockuuid": unlock_uuid, "tokens": tokens}, request_metadata
+            "BulkListTokens",
+            "POST",
+            {"unlockuuid": unlock_uuid, "tokens": tokens},
+            request_metadata,
         )
 
     def bulk_delete_tokens(
@@ -2337,11 +2419,16 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "BulkDeleteTokens", "POST", {"unlockuuid": unlock_uuid, "tokens": tokens}, request_metadata
+            "BulkDeleteTokens",
+            "POST",
+            {"unlockuuid": unlock_uuid, "tokens": tokens},
+            request_metadata,
         )
 
     # Enhanced System Configuration
-    def get_ui_conf(self, request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_ui_conf(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Get UI configuration.
 
@@ -2353,7 +2440,9 @@ class DatabunkerproAPI:
         """
         return self._make_request("TenantGetUIConf", "POST", None, request_metadata)
 
-    def get_tenant_conf(self, request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get_tenant_conf(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Get tenant configuration.
 
@@ -2383,7 +2472,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "SystemGetUserHTMLReport", "POST", {"mode": mode, "identity": identity}, request_metadata
+            "SystemGetUserHTMLReport",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
         )
 
     def get_user_report(
@@ -2404,7 +2496,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "SystemGetUserReport", "POST", {"mode": mode, "identity": identity}, request_metadata
+            "SystemGetUserReport",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
         )
 
     # Enhanced Session Management
@@ -2450,7 +2545,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "SessionListUserSessions", "POST", {"mode": mode, "identity": identity}, request_metadata
+            "SessionListUserSessions",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
         )
 
     # Captcha Management
@@ -2489,7 +2587,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "UserPatch", "POST", {"mode": mode, "identity": identity, "patch": patch}, request_metadata
+            "UserPatch",
+            "POST",
+            {"mode": mode, "identity": identity, "patch": patch},
+            request_metadata,
         )
 
     def request_user_patch(
@@ -2512,7 +2613,10 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "UserPatchRequest", "POST", {"mode": mode, "identity": identity, "patch": patch}, request_metadata
+            "UserPatchRequest",
+            "POST",
+            {"mode": mode, "identity": identity, "patch": patch},
+            request_metadata,
         )
 
     # System Metrics
@@ -2546,19 +2650,20 @@ class DatabunkerproAPI:
             Dict[str, Any]: Parsed metrics
         """
         metrics = {}
-        lines = metrics_text.split('\n')
-        
+        lines = metrics_text.split("\n")
+
         for line in lines:
             # Skip comments and empty lines
-            if line.startswith('#') or not line.strip():
+            if line.startswith("#") or not line.strip():
                 continue
-            
+
             # Parse metric line
             import re
-            match = re.match(r'^([a-zA-Z0-9_]+)(?:{([^}]+)})?\s+([0-9.]+)$', line)
+
+            match = re.match(r"^([a-zA-Z0-9_]+)(?:{([^}]+)})?\s+([0-9.]+)$", line)
             if match:
                 name, labels, value = match.groups()
                 metric_key = f"{name}{{{labels}}}" if labels else name
                 metrics[metric_key] = float(value)
-        
+
         return metrics

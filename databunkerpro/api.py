@@ -2318,7 +2318,11 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        data: Dict[str, Any] = {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}
+        data: Dict[str, Any] = {
+            "unlockuuid": unlock_uuid,
+            "offset": offset,
+            "limit": limit,
+        }
         if isinstance(group_name, int) or str(group_name).isdigit():
             data["groupid"] = group_name
         else:

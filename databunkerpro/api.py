@@ -2098,20 +2098,20 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        data = {"mode": mode, "identity": identity}
+        data: Dict[str, Any] = {"mode": mode, "identity": identity}
 
         # Check if group_name is an integer (group ID) or string (group name)
         if isinstance(group_name, int) or str(group_name).isdigit():
             data["groupid"] = group_name
         else:
-            data["groupname"] = group_name
+            data["groupname"] = str(group_name)
 
         if role_name is not None:
             # Check if role_name is an integer (role ID) or string (role name)
             if isinstance(role_name, int) or str(role_name).isdigit():
                 data["roleid"] = role_name
             else:
-                data["rolename"] = role_name
+                data["rolename"] = str(role_name)
 
         return self._make_request("GroupAddUser", "POST", data, request_metadata)
 
@@ -2318,11 +2318,11 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
-        data = {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}
+        data: Dict[str, Any] = {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}
         if isinstance(group_name, int) or str(group_name).isdigit():
             data["groupid"] = group_name
         else:
-            data["groupname"] = group_name
+            data["groupname"] = str(group_name)
         return self._make_request("BulkListGroupUsers", "POST", data, request_metadata)
 
     def bulk_list_user_requests(

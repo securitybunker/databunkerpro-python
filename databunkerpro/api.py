@@ -1489,3 +1489,1076 @@ class DatabunkerproAPI:
             Dict[str, Any]: The API response
         """
         return self._make_request("SharedRecordList", "POST", options, request_metadata)
+
+    # User Request Management
+    def get_user_request(
+        self, request_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get a specific user request by UUID.
+
+        Args:
+            request_uuid (str): UUID of the request to retrieve
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserRequestGet", "POST", {"requestuuid": request_uuid}, request_metadata
+        )
+
+    def list_user_requests(
+        self,
+        mode: str,
+        identity: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List user requests for a specific user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserRequestListUserRequests",
+            "POST",
+            {"mode": mode, "identity": identity, "offset": offset, "limit": limit},
+            request_metadata,
+        )
+
+    def cancel_user_request(
+        self,
+        request_uuid: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Cancel a user request.
+
+        Args:
+            request_uuid (str): UUID of the request to cancel
+            options (Dict[str, Any], optional): Optional parameters for cancellation
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"requestuuid": request_uuid}
+        if options:
+            data.update(options)
+        return self._make_request("UserRequestCancel", "POST", data, request_metadata)
+
+    # Legal Basis Management
+    def update_legal_basis(
+        self,
+        brief: str,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update an existing legal basis.
+
+        Args:
+            brief (str): Unique identifier for the legal basis
+            options (Dict[str, Any]): The legal basis update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"brief": brief, **options}
+        return self._make_request("LegalBasisUpdate", "POST", data, request_metadata)
+
+    def list_agreements(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all agreements.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("LegalBasisListAgreements", "POST", None, request_metadata)
+
+    def delete_legal_basis(
+        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a legal basis.
+
+        Args:
+            brief (str): Unique identifier for the legal basis to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("LegalBasisDelete", "POST", {"brief": brief}, request_metadata)
+
+    # Agreement Management
+    def cancel_agreement(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Cancel an agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement to cancel
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementCancel", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+        )
+
+    def request_agreement_cancellation(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request cancellation of an agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement to cancel
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementCancelRequest", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+        )
+
+    def get_user_agreement(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get a specific agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementGet", "POST", {"mode": mode, "identity": identity, "brief": brief}, request_metadata
+        )
+
+    def list_user_agreements(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List all agreements for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementListUserAgreements", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
+
+    def revoke_all_agreements(
+        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Revoke all agreements for a specific legal basis.
+
+        Args:
+            brief (str): Unique identifier of the legal basis
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("AgreementRevokeAll", "POST", {"brief": brief}, request_metadata)
+
+    # Processing Activity Management
+    def list_processing_activities(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all processing activities.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ProcessingActivityListActivities", "POST", None, request_metadata)
+
+    def create_processing_activity(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new processing activity.
+
+        Args:
+            options (Dict[str, Any]): The processing activity options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ProcessingActivityCreate", "POST", options, request_metadata)
+
+    def update_processing_activity(
+        self,
+        activity: str,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update an existing processing activity.
+
+        Args:
+            activity (str): Current activity identifier
+            options (Dict[str, Any]): The processing activity update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"activity": activity, **options}
+        return self._make_request("ProcessingActivityUpdate", "POST", data, request_metadata)
+
+    def delete_processing_activity(
+        self, activity: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a processing activity.
+
+        Args:
+            activity (str): Activity identifier to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ProcessingActivityDelete", "POST", {"activity": activity}, request_metadata)
+
+    def link_processing_activity_to_legal_basis(
+        self,
+        activity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Link a processing activity to a legal basis.
+
+        Args:
+            activity (str): Activity identifier
+            brief (str): Legal basis brief identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ProcessingActivityLinkLegalBasis", "POST", {"activity": activity, "brief": brief}, request_metadata
+        )
+
+    def unlink_processing_activity_from_legal_basis(
+        self,
+        activity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Unlink a processing activity from a legal basis.
+
+        Args:
+            activity (str): Activity identifier
+            brief (str): Legal basis brief identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ProcessingActivityUnlinkLegalBasis", "POST", {"activity": activity, "brief": brief}, request_metadata
+        )
+
+    # Enhanced Connector Management
+    def list_supported_connectors(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all supported connector types.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ConnectorListSupportedConnectors", "POST", None, request_metadata)
+
+    def list_connectors_with_pagination(
+        self,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List connectors with pagination.
+
+        Args:
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorListConnectors", "POST", {"offset": offset, "limit": limit}, request_metadata
+        )
+
+    def validate_connector_connectivity(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Validate connector connectivity.
+
+        Args:
+            options (Dict[str, Any]): Connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ConnectorValidateConnectivity", "POST", options, request_metadata)
+
+    def get_table_metadata(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get table metadata for a connector.
+
+        Args:
+            options (Dict[str, Any]): Connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("ConnectorGetTableMetaData", "POST", options, request_metadata)
+
+    def connector_get_user_data(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (str): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorGetUserData", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+        )
+
+    def connector_get_user_extra_data(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user extra data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (str): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorGetUserExtraData", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+        )
+
+    def connector_delete_user(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete user data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (str): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorDeleteUser", "POST", {"mode": mode, "identity": identity, "connectorid": connector_id}, request_metadata
+        )
+
+    # Enhanced Group Management
+    def list_all_groups(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all groups in the system.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("GroupListAllGroups", "POST", None, request_metadata)
+
+    def list_user_groups(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List groups for a specific user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "GroupListUserGroups", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
+
+    def remove_user_from_group(
+        self,
+        mode: str,
+        identity: str,
+        group_id: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Remove a user from a group.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            group_id (str): The group ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "GroupDeleteUser", "POST", {"mode": mode, "identity": identity, "groupid": group_id}, request_metadata
+        )
+
+    def add_user_to_group(
+        self,
+        mode: str,
+        identity: str,
+        group_name: Union[str, int],
+        role_name: Optional[Union[str, int]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Add a user to a group with an optional role.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            group_name (Union[str, int]): Group name or ID to add the user to
+            role_name (Union[str, int], optional): Optional role name or ID to assign to the user in the group
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"mode": mode, "identity": identity}
+
+        # Check if group_name is an integer (group ID) or string (group name)
+        if isinstance(group_name, int) or str(group_name).isdigit():
+            data["groupid"] = group_name
+        else:
+            data["groupname"] = group_name
+
+        if role_name is not None:
+            # Check if role_name is an integer (role ID) or string (role name)
+            if isinstance(role_name, int) or str(role_name).isdigit():
+                data["roleid"] = role_name
+            else:
+                data["rolename"] = role_name
+
+        return self._make_request("GroupAddUser", "POST", data, request_metadata)
+
+    # XToken Management
+    def create_x_token(
+        self,
+        mode: str,
+        identity: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create an access token for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            options (Dict[str, Any], optional): Optional parameters for token creation
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"mode": mode, "identity": identity}
+        if options:
+            data.update(options)
+        return self._make_request("XTokenCreate", "POST", data, request_metadata)
+
+    # Enhanced Audit Management
+    def list_user_audit_events(
+        self,
+        mode: str,
+        identity: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List audit events for a specific user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AuditListUserEvents", "POST", {"mode": mode, "identity": identity, "offset": offset, "limit": limit}, request_metadata
+        )
+
+    def get_audit_event(
+        self, audit_event_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get a specific audit event by UUID.
+
+        Args:
+            audit_event_uuid (str): UUID of the audit event to retrieve
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AuditGetEvent", "POST", {"auditeventuuid": audit_event_uuid}, request_metadata
+        )
+
+    # Enhanced Tenant Management
+    def list_tenants_with_pagination(
+        self,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List tenants with pagination.
+
+        Args:
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "TenantListTenants", "POST", {"offset": offset, "limit": limit}, request_metadata
+        )
+
+    # Enhanced Role Management
+    def link_policy(
+        self,
+        role_name: str,
+        policy_name: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Link a policy to a role.
+
+        Args:
+            role_name (str): Name of the role
+            policy_name (str): Name of the policy to link
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "RoleLinkPolicy", "POST", {"rolename": role_name, "policyname": policy_name}, request_metadata
+        )
+
+    # Enhanced Policy Management
+    def list_policies_enhanced(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all policies with enhanced information.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("PolicyListAllPolicies", "POST", None, request_metadata)
+
+    # Bulk Operations
+    def bulk_list_unlock(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Start a bulk list unlock operation.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("BulkListUnlock", "POST", None, request_metadata)
+
+    def bulk_list_users(
+        self,
+        unlock_uuid: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List users in a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "BulkListUsers", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+        )
+
+    def bulk_list_group_users(
+        self,
+        unlock_uuid: str,
+        group_name: Union[str, int],
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List users in a group for a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            group_name (Union[str, int]): Group name or ID
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}
+        if isinstance(group_name, int) or str(group_name).isdigit():
+            data["groupid"] = group_name
+        else:
+            data["groupname"] = group_name
+        return self._make_request("BulkListGroupUsers", "POST", data, request_metadata)
+
+    def bulk_list_user_requests(
+        self,
+        unlock_uuid: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List user requests in a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "BulkListUserRequests", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+        )
+
+    def bulk_list_audit_events(
+        self,
+        unlock_uuid: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List audit events in a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "BulkListAuditEvents", "POST", {"unlockuuid": unlock_uuid, "offset": offset, "limit": limit}, request_metadata
+        )
+
+    def bulk_list_tokens(
+        self,
+        unlock_uuid: str,
+        tokens: List[str],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List tokens in a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            tokens (List[str]): List of tokens to retrieve
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "BulkListTokens", "POST", {"unlockuuid": unlock_uuid, "tokens": tokens}, request_metadata
+        )
+
+    def bulk_delete_tokens(
+        self,
+        unlock_uuid: str,
+        tokens: List[str],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete tokens in a bulk operation.
+
+        Args:
+            unlock_uuid (str): UUID of the unlock operation
+            tokens (List[str]): List of tokens to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "BulkDeleteTokens", "POST", {"unlockuuid": unlock_uuid, "tokens": tokens}, request_metadata
+        )
+
+    # Enhanced System Configuration
+    def get_ui_conf(self, request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Get UI configuration.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("TenantGetUIConf", "POST", None, request_metadata)
+
+    def get_tenant_conf(self, request_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Get tenant configuration.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("TenantGetConf", "POST", None, request_metadata)
+
+    def get_user_html_report(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get HTML report for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "SystemGetUserHTMLReport", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
+
+    def get_user_report(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get report for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "SystemGetUserReport", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
+
+    # Enhanced Session Management
+    def upsert_session(
+        self,
+        session_uuid: str,
+        session_data: Dict[str, Any],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create or update a session (upsert operation).
+
+        Args:
+            session_uuid (str): UUID of the session
+            session_data (Dict[str, Any]): Session data
+            options (Dict[str, Any], optional): Additional options for session creation/update
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"sessionuuid": session_uuid, "sessiondata": session_data}
+        if options:
+            data.update(options)
+        return self._make_request("SessionUpsert", "POST", data, request_metadata)
+
+    def list_user_sessions(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List all sessions for a specific user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "SessionListUserSessions", "POST", {"mode": mode, "identity": identity}, request_metadata
+        )
+
+    # Captcha Management
+    def create_captcha(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a captcha for user verification.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("CaptchaCreate", "POST", None, request_metadata)
+
+    # User Patch Operations
+    def patch_user(
+        self,
+        mode: str,
+        identity: str,
+        patch: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Patch a user record with specific changes.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            patch (Dict[str, Any]): The patch data to apply
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserPatch", "POST", {"mode": mode, "identity": identity, "patch": patch}, request_metadata
+        )
+
+    def request_user_patch(
+        self,
+        mode: str,
+        identity: str,
+        patch: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request a user patch operation.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            patch (Dict[str, Any]): The patch data to apply
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserPatchRequest", "POST", {"mode": mode, "identity": identity, "patch": patch}, request_metadata
+        )
+
+    # System Metrics
+    def get_system_metrics(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get system metrics in Prometheus format.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The parsed metrics
+        """
+        try:
+            response = requests.get(f"{self.base_url}/metrics")
+            metrics_text = response.text
+            return self._parse_prometheus_metrics(metrics_text)
+        except Exception as e:
+            return {"status": "error", "message": f"Error getting metrics: {str(e)}"}
+
+    def _parse_prometheus_metrics(self, metrics_text: str) -> Dict[str, Any]:
+        """
+        Parse Prometheus metrics text into a dictionary.
+
+        Args:
+            metrics_text (str): Raw metrics text in Prometheus format
+
+        Returns:
+            Dict[str, Any]: Parsed metrics
+        """
+        metrics = {}
+        lines = metrics_text.split('\n')
+        
+        for line in lines:
+            # Skip comments and empty lines
+            if line.startswith('#') or not line.strip():
+                continue
+            
+            # Parse metric line
+            import re
+            match = re.match(r'^([a-zA-Z0-9_]+)(?:{([^}]+)})?\s+([0-9.]+)$', line)
+            if match:
+                name, labels, value = match.groups()
+                metric_key = f"{name}{{{labels}}}" if labels else name
+                metrics[metric_key] = float(value)
+        
+        return metrics

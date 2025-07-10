@@ -123,6 +123,7 @@ class DatabunkerproAPI:
         response = requests.request(method, url, headers=headers, data=body)
         return response.content
 
+    # User Management
     def create_user(
         self,
         profile: Dict[str, Any],
@@ -270,6 +271,84 @@ class DatabunkerproAPI:
             request_metadata,
         )
 
+    def request_user_update(
+        self,
+        mode: str,
+        identity: str,
+        profile: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request update of user information in DatabunkerPro.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            profile (Dict[str, Any]): Updated user profile data
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserUpdateRequest",
+            "POST",
+            {"mode": mode, "identity": identity, "profile": profile},
+            request_metadata,
+        )
+
+    def patch_user(
+        self,
+        mode: str,
+        identity: str,
+        patch: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Patch a user record with specific changes.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            patch (Dict[str, Any]): The patch data to apply
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserPatch",
+            "POST",
+            {"mode": mode, "identity": identity, "patch": patch},
+            request_metadata,
+        )
+
+    def request_user_patch(
+        self,
+        mode: str,
+        identity: str,
+        patch: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request a user patch operation.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            patch (Dict[str, Any]): The patch data to apply
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserPatchRequest",
+            "POST",
+            {"mode": mode, "identity": identity, "patch": patch},
+            request_metadata,
+        )
+
     def delete_user(
         self,
         mode: str,
@@ -315,32 +394,7 @@ class DatabunkerproAPI:
             request_metadata,
         )
 
-    def request_user_update(
-        self,
-        mode: str,
-        identity: str,
-        profile: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Request update of user information in DatabunkerPro.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            profile (Dict[str, Any]): Updated user profile data
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "UserUpdateRequest",
-            "POST",
-            {"mode": mode, "identity": identity, "profile": profile},
-            request_metadata,
-        )
-
+    # User Authentication
     def prelogin_user(
         self,
         mode: str,
@@ -399,6 +453,134 @@ class DatabunkerproAPI:
             {"mode": mode, "identity": identity, "smscode": smscode},
             request_metadata,
         )
+
+    def create_captcha(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a captcha for user verification.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("CaptchaCreate", "POST", None, request_metadata)
+
+    def create_x_token(
+        self,
+        mode: str,
+        identity: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create an access token for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            options (Dict[str, Any], optional): Optional parameters for token creation
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"mode": mode, "identity": identity}
+        if options:
+            data.update(options)
+        return self._make_request("XTokenCreate", "POST", data, request_metadata)
+
+    # User Request Management
+    def get_user_request(
+        self, request_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get a specific user request by UUID.
+
+        Args:
+            request_uuid (str): UUID of the request to retrieve
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserRequestGet", "POST", {"requestuuid": request_uuid}, request_metadata
+        )
+
+    def list_user_requests(
+        self,
+        mode: str,
+        identity: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List user requests for a specific user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "UserRequestListUserRequests",
+            "POST",
+            {"mode": mode, "identity": identity, "offset": offset, "limit": limit},
+            request_metadata,
+        )
+
+    def cancel_user_request(
+        self,
+        request_uuid: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Cancel a user request.
+
+        Args:
+            request_uuid (str): UUID of the request to cancel
+            options (Dict[str, Any], optional): Optional parameters for cancellation
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"requestuuid": request_uuid}
+        if options:
+            data.update(options)
+        return self._make_request("UserRequestCancel", "POST", data, request_metadata)
+
+    def approve_user_request(
+        self,
+        request_uuid: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Approve a user request.
+
+        Args:
+            request_uuid (str): The UUID of the request to approve
+            options (Dict[str, Any], optional): Optional parameters (only 'reason' is used)
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"requestuuid": request_uuid}
+        if options and "reason" in options:
+            data["reason"] = options["reason"]
+        return self._make_request("UserRequestApprove", "POST", data, request_metadata)
 
     # App Data Management
     def create_app_data(
@@ -549,22 +731,1035 @@ class DatabunkerproAPI:
         """
         return self._make_request("AppdataListAppNames", "POST", None, request_metadata)
 
-    def get_system_stats(
+    # Legal Basis Management
+    def create_legal_basis(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a legal basis for data processing.
+
+        Args:
+            options (Dict[str, Any]): The legal basis options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "brief": options.get("brief"),
+            "status": options.get("status"),
+            "module": options.get("module"),
+            "fulldesc": options.get("fulldesc"),
+            "shortdesc": options.get("shortdesc"),
+            "basistype": options.get("basistype"),
+            "requiredmsg": options.get("requiredmsg"),
+            "requiredflag": options.get("requiredflag"),
+        }
+        return self._make_request("LegalBasisCreate", "POST", data, request_metadata)
+
+    def update_legal_basis(
+        self,
+        brief: str,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update an existing legal basis.
+
+        Args:
+            brief (str): Unique identifier for the legal basis
+            options (Dict[str, Any]): The legal basis update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"brief": brief, **options}
+        return self._make_request("LegalBasisUpdate", "POST", data, request_metadata)
+
+    def delete_legal_basis(
+        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a legal basis.
+
+        Args:
+            brief (str): Unique identifier for the legal basis to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "LegalBasisDelete", "POST", {"brief": brief}, request_metadata
+        )
+
+    def list_agreements(
         self, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Get system statistics from DatabunkerPro.
+        List all agreements.
 
         Args:
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
-            Dict[str, Any]: The API response containing system statistics
+            Dict[str, Any]: The API response
         """
         return self._make_request(
-            "SystemGetSystemStats", "POST", None, request_metadata
+            "LegalBasisListAgreements", "POST", None, request_metadata
         )
 
+    # Agreement Management
+    def accept_agreement(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Accept an agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): The brief identifier of the agreement
+            options (Dict[str, Any], optional): Additional options for agreement acceptance
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "brief": brief,
+            "agreementmethod": options.get("agreementmethod") if options else None,
+            "lastmodifiedby": options.get("lastmodifiedby") if options else None,
+            "referencecode": options.get("referencecode") if options else None,
+            "starttime": options.get("starttime") if options else None,
+            "finaltime": options.get("finaltime") if options else None,
+            "status": options.get("status") if options else None,
+        }
+        return self._make_request("AgreementAccept", "POST", data, request_metadata)
+
+    def get_user_agreement(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get a specific agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementGet",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
+        )
+
+    def list_user_agreements(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List all agreements for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementListUserAgreements",
+            "POST",
+            {"mode": mode, "identity": identity},
+            request_metadata,
+        )
+
+    def cancel_agreement(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Cancel an agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement to cancel
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementCancel",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
+        )
+
+    def request_agreement_cancellation(
+        self,
+        mode: str,
+        identity: str,
+        brief: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Request cancellation of an agreement for a user.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            brief (str): Unique identifier of the legal basis/agreement to cancel
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementCancelRequest",
+            "POST",
+            {"mode": mode, "identity": identity, "brief": brief},
+            request_metadata,
+        )
+
+    def revoke_all_agreements(
+        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Revoke all agreements for a specific legal basis.
+
+        Args:
+            brief (str): Unique identifier of the legal basis
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "AgreementRevokeAll", "POST", {"brief": brief}, request_metadata
+        )
+
+    # Group Management
+    def create_group(
+        self,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new group.
+
+        Args:
+            options (Dict[str, Any], optional): Group creation options
+                - groupname (str): The name of the group
+                - groupdesc (str, optional): Description of the group
+                - grouptype (str, optional): Type of the group
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "groupname": options.get("groupname") if options else None,
+            "groupdesc": options.get("groupdesc") if options else None,
+            "grouptype": options.get("grouptype") if options else None,
+        }
+        return self._make_request("GroupCreate", "POST", data, request_metadata)
+
+    def get_group(
+        self, group_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get group information.
+
+        Args:
+            group_id (str): The ID of the group
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "GroupGet", "POST", {"groupid": group_id}, request_metadata
+        )
+
+    def update_group(
+        self,
+        group_id: Union[str, int],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update group information.
+
+        Args:
+            group_id (Union[str, int]): The ID or name of the group
+            options (Dict[str, Any], optional): Group update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {}
+        if isinstance(group_id, int) or str(group_id).isdigit():
+            data["groupid"] = group_id
+        else:
+            data["groupname"] = group_id
+        if options:
+            data.update(options)
+        return self._make_request("GroupUpdate", "POST", data, request_metadata)
+
+    def delete_group(
+        self, group_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a group.
+
+        Args:
+            group_id (str): The ID of the group to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "GroupDelete", "POST", {"groupid": group_id}, request_metadata
+        )
+
+    def list_groups(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all groups.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("GroupList", "POST", None, request_metadata)
+
+    # Audit Management
+    def get_audit_log(
+        self,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get audit log entries.
+
+        Args:
+            options (Dict[str, Any], optional): Filtering options for the audit log
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("AuditGetLog", "POST", options, request_metadata)
+
+    def get_audit_stats(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get audit statistics.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("AuditGetStats", "POST", None, request_metadata)
+
+    # Tenant Management
+    def create_tenant(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new tenant.
+
+        Args:
+            options (Dict[str, Any]): Tenant creation options
+                - tenantname (str): Name of the tenant
+                - tenantorg (str): Organization name
+                - email (str): Email address for tenant contact
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "tenantname": options.get("tenantname"),
+            "tenantorg": options.get("tenantorg"),
+            "email": options.get("email"),
+        }
+        return self._make_request("TenantCreate", "POST", data, request_metadata)
+
+    def get_tenant(
+        self, tenant_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get tenant information.
+
+        Args:
+            tenant_id (str): The ID of the tenant
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "TenantGet", "POST", {"tenantid": tenant_id}, request_metadata
+        )
+
+    def update_tenant(
+        self,
+        tenant_id: str,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update tenant information.
+
+        Args:
+            tenant_id (str): The ID of the tenant to update
+            options (Dict[str, Any]): Tenant update options
+                - tenantname (str): New name of the tenant
+                - tenantorg (str): New organization name
+                - email (str): New email address for tenant admin
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"tenantid": tenant_id, **options}
+        return self._make_request("TenantUpdate", "POST", data, request_metadata)
+
+    def delete_tenant(
+        self, tenant_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a tenant.
+
+        Args:
+            tenant_id (str): The ID of the tenant to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "TenantDelete", "POST", {"tenantid": tenant_id}, request_metadata
+        )
+
+    def list_tenants(
+        self,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List all tenants with pagination.
+
+        Args:
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "TenantListTenants",
+            "POST",
+            {"offset": offset, "limit": limit},
+            request_metadata,
+        )
+
+    # Role Management
+    def create_role(
+        self,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new role.
+
+        Args:
+            options (Dict[str, Any], optional): Role creation options
+                - rolename (str): The name of the role
+                - roledesc (str, optional): Description of the role
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "rolename": options.get("rolename") if options else None,
+            "roledesc": options.get("roledesc") if options else None,
+        }
+        return self._make_request("RoleCreate", "POST", data, request_metadata)
+
+    def get_role(
+        self, role_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get role information.
+
+        Args:
+            role_id (str): The ID of the role
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "RoleGet", "POST", {"roleid": role_id}, request_metadata
+        )
+
+    def update_role(
+        self,
+        role_id: Union[str, int],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update role information.
+
+        Args:
+            role_id (Union[str, int]): The ID or name of the role
+            options (Dict[str, Any], optional): Role update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {}
+        if isinstance(role_id, int) or str(role_id).isdigit():
+            data["roleid"] = role_id
+        else:
+            data["rolename"] = role_id
+        if options:
+            data.update(options)
+        return self._make_request("RoleUpdate", "POST", data, request_metadata)
+
+    def delete_role(
+        self, role_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a role.
+
+        Args:
+            role_id (str): The ID of the role to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "RoleDelete", "POST", {"roleid": role_id}, request_metadata
+        )
+
+    def list_roles(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all roles.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("RoleList", "POST", None, request_metadata)
+
+    # Policy Management
+    def create_policy(
+        self,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new policy.
+
+        Args:
+            options (Dict[str, Any], optional): Policy creation options
+                - policyname (str): The name of the policy
+                - policydesc (str, optional): Description of the policy
+                - policy (Dict[str, Any]): The policy configuration
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "policyname": options.get("policyname") if options else None,
+            "policydesc": options.get("policydesc") if options else None,
+            "policy": options.get("policy") if options else None,
+        }
+        return self._make_request("PolicyCreate", "POST", data, request_metadata)
+
+    def get_policy(
+        self, policy_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get policy information.
+
+        Args:
+            policy_id (str): The ID of the policy
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "PolicyGet", "POST", {"policyid": policy_id}, request_metadata
+        )
+
+    def update_policy(
+        self,
+        policy_id: Union[str, int],
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update policy information.
+
+        Args:
+            policy_id (Union[str, int]): The ID or name of the policy
+            options (Dict[str, Any], optional): Policy update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {}
+        if isinstance(policy_id, int) or str(policy_id).isdigit():
+            data["policyid"] = policy_id
+        else:
+            data["policyname"] = policy_id
+        if options:
+            data.update(options)
+        return self._make_request("PolicyUpdate", "POST", data, request_metadata)
+
+    def delete_policy(
+        self, policy_id: str, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Delete a policy.
+
+        Args:
+            policy_id (str): The ID of the policy to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "PolicyDelete", "POST", {"policyid": policy_id}, request_metadata
+        )
+
+    def list_policies(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all policies with enhanced information.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "PolicyListAllPolicies", "POST", None, request_metadata
+        )
+
+    # System Configuration
+    def get_system_config(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get system configuration.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("SystemGetConfig", "POST", None, request_metadata)
+
+    def update_system_config(
+        self,
+        config: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update system configuration.
+
+        Args:
+            config (Dict[str, Any]): The new system configuration
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "SystemUpdateConfig", "POST", config, request_metadata
+        )
+
+    # User Request Management
+    def get_user_requests(
+        self,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user requests.
+
+        Args:
+            options (Dict[str, Any], optional): Filtering options for the requests
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request("UserRequestGet", "POST", options, request_metadata)
+
+    def approve_user_request(
+        self,
+        request_uuid: str,
+        options: Optional[Dict[str, Any]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Approve a user request.
+
+        Args:
+            request_uuid (str): The UUID of the request to approve
+            options (Dict[str, Any], optional): Optional parameters (only 'reason' is used)
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"requestuuid": request_uuid}
+        if options and "reason" in options:
+            data["reason"] = options["reason"]
+        return self._make_request("UserRequestApprove", "POST", data, request_metadata)
+
+    # Connector Management
+    def list_supported_connectors(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        List all supported connector types.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorListSupportedConnectors", "POST", None, request_metadata
+        )
+
+    def list_connectors_with_pagination(
+        self,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        List connectors with pagination.
+
+        Args:
+            offset (int, optional): Offset for pagination. Defaults to 0
+            limit (int, optional): Limit for pagination. Defaults to 10
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        return self._make_request(
+            "ConnectorListConnectors",
+            "POST",
+            {"offset": offset, "limit": limit},
+            request_metadata,
+        )
+
+    def create_connector(
+        self,
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Create a new connector.
+
+        Args:
+            options (Dict[str, Any]): The connector options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "connectorname": options.get("connectorname"),
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        return self._make_request("ConnectorCreate", "POST", data, request_metadata)
+
+    def update_connector(
+        self,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update connector information.
+
+        Args:
+            connector_id (Union[str, int]): The ID of the connector
+            options (Dict[str, Any]): The connector update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "connectorid": connector_id,
+            "connectorname": options.get("connectorname"),
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        return self._make_request("ConnectorUpdate", "POST", data, request_metadata)
+
+    def validate_connector_connectivity(
+        self,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Validate connector connectivity.
+
+        Args:
+            connector_id (Union[str, int]): The connector ID
+            options (Dict[str, Any]): Connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+            data["connectorname"] = options.get("connectorname")
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorValidateConnectivity", "POST", data, request_metadata
+        )
+
+    def delete_connector(
+        self,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete a connector.
+
+        Args:
+            connector_id (Union[str, int]): The ID of the connector to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request("ConnectorDelete", "POST", data, request_metadata)
+
+    def get_table_metadata(
+        self,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get table metadata for a connector.
+
+        Args:
+            connector_id (Union[str, int]): The connector ID
+            options (Dict[str, Any]): Connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+            data["connectorname"] = options.get("connectorname")
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorGetTableMetaData", "POST", data, request_metadata
+        )
+
+    def connector_get_user_data(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (Union[str, int]): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorGetUserData", "POST", data, request_metadata
+        )
+
+    def connector_get_user_extra_data(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user extra data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (Union[str, int]): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorGetUserExtraData", "POST", data, request_metadata
+        )
+
+    def connector_delete_user(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete user data from a connector.
+
+        Args:
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            connector_id (Union[str, int]): The connector ID
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data: Dict[str, Any] = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request("ConnectorDeleteUser", "POST", data, request_metadata)
+
+    # Token Management
     def create_token(
         self,
         token_type: str,
@@ -661,657 +1856,6 @@ class DatabunkerproAPI:
             "TokenDelete", "POST", {"token": token}, request_metadata
         )
 
-    # Agreement Management
-    def create_legal_basis(
-        self,
-        mode: str,
-        identity: str,
-        legal_basis: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a legal basis for data processing.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            legal_basis (Dict[str, Any]): The legal basis information
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "LegalBasisCreate",
-            "POST",
-            {"mode": mode, "identity": identity, "legalbasis": legal_basis},
-            request_metadata,
-        )
-
-    def accept_agreement(
-        self,
-        mode: str,
-        identity: str,
-        agreement_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Accept an agreement for a user.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            agreement_id (str): The ID of the agreement to accept
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "AgreementAccept",
-            "POST",
-            {"mode": mode, "identity": identity, "agreementid": agreement_id},
-            request_metadata,
-        )
-
-    # Group Management
-    def create_group(
-        self,
-        name: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new group.
-
-        Args:
-            name (str): The name of the group
-            options (Dict[str, Any], optional): Additional options for group creation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"name": name}
-        if options:
-            data.update(options)
-        return self._make_request("GroupCreate", "POST", data, request_metadata)
-
-    def get_group(
-        self, group_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get group information.
-
-        Args:
-            group_id (str): The ID of the group
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "GroupGet", "POST", {"groupid": group_id}, request_metadata
-        )
-
-    def update_group(
-        self,
-        group_id: str,
-        name: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update group information.
-
-        Args:
-            group_id (str): The ID of the group
-            name (str): The new name for the group
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "GroupUpdate", "POST", {"groupid": group_id, "name": name}, request_metadata
-        )
-
-    def delete_group(
-        self, group_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a group.
-
-        Args:
-            group_id (str): The ID of the group to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "GroupDelete", "POST", {"groupid": group_id}, request_metadata
-        )
-
-    def list_groups(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all groups.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("GroupList", "POST", None, request_metadata)
-
-    # Audit Management
-    def get_audit_log(
-        self,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get audit log entries.
-
-        Args:
-            options (Dict[str, Any], optional): Filtering options for the audit log
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("AuditGetLog", "POST", options, request_metadata)
-
-    def get_audit_stats(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get audit statistics.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("AuditGetStats", "POST", None, request_metadata)
-
-    # Tenant Management
-    def create_tenant(
-        self,
-        name: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new tenant.
-
-        Args:
-            name (str): The name of the tenant
-            options (Dict[str, Any], optional): Additional options for tenant creation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"name": name}
-        if options:
-            data.update(options)
-        return self._make_request("TenantCreate", "POST", data, request_metadata)
-
-    def get_tenant(
-        self, tenant_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get tenant information.
-
-        Args:
-            tenant_id (str): The ID of the tenant
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "TenantGet", "POST", {"tenantid": tenant_id}, request_metadata
-        )
-
-    def update_tenant(
-        self,
-        tenant_id: str,
-        name: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update tenant information.
-
-        Args:
-            tenant_id (str): The ID of the tenant
-            name (str): The new name for the tenant
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "TenantUpdate",
-            "POST",
-            {"tenantid": tenant_id, "name": name},
-            request_metadata,
-        )
-
-    def delete_tenant(
-        self, tenant_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a tenant.
-
-        Args:
-            tenant_id (str): The ID of the tenant to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "TenantDelete", "POST", {"tenantid": tenant_id}, request_metadata
-        )
-
-    def list_tenants(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all tenants.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("TenantList", "POST", None, request_metadata)
-
-    # Role Management
-    def create_role(
-        self,
-        name: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new role.
-
-        Args:
-            name (str): The name of the role
-            options (Dict[str, Any], optional): Additional options for role creation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"name": name}
-        if options:
-            data.update(options)
-        return self._make_request("RoleCreate", "POST", data, request_metadata)
-
-    def get_role(
-        self, role_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get role information.
-
-        Args:
-            role_id (str): The ID of the role
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "RoleGet", "POST", {"roleid": role_id}, request_metadata
-        )
-
-    def update_role(
-        self,
-        role_id: str,
-        name: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update role information.
-
-        Args:
-            role_id (str): The ID of the role
-            name (str): The new name for the role
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "RoleUpdate", "POST", {"roleid": role_id, "name": name}, request_metadata
-        )
-
-    def delete_role(
-        self, role_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a role.
-
-        Args:
-            role_id (str): The ID of the role to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "RoleDelete", "POST", {"roleid": role_id}, request_metadata
-        )
-
-    def list_roles(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all roles.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("RoleList", "POST", None, request_metadata)
-
-    # Policy Management
-    def create_policy(
-        self,
-        name: str,
-        policy: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new policy.
-
-        Args:
-            name (str): The name of the policy
-            policy (Dict[str, Any]): The policy configuration
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "PolicyCreate", "POST", {"name": name, "policy": policy}, request_metadata
-        )
-
-    def get_policy(
-        self, policy_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get policy information.
-
-        Args:
-            policy_id (str): The ID of the policy
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "PolicyGet", "POST", {"policyid": policy_id}, request_metadata
-        )
-
-    def update_policy(
-        self,
-        policy_id: str,
-        name: str,
-        policy: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update policy information.
-
-        Args:
-            policy_id (str): The ID of the policy
-            name (str): The new name for the policy
-            policy (Dict[str, Any]): The updated policy configuration
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "PolicyUpdate",
-            "POST",
-            {"policyid": policy_id, "name": name, "policy": policy},
-            request_metadata,
-        )
-
-    def delete_policy(
-        self, policy_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a policy.
-
-        Args:
-            policy_id (str): The ID of the policy to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "PolicyDelete", "POST", {"policyid": policy_id}, request_metadata
-        )
-
-    def list_policies(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all policies.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("PolicyList", "POST", None, request_metadata)
-
-    # System Configuration
-    def get_system_config(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get system configuration.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("SystemGetConfig", "POST", None, request_metadata)
-
-    def update_system_config(
-        self,
-        config: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update system configuration.
-
-        Args:
-            config (Dict[str, Any]): The new system configuration
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "SystemUpdateConfig", "POST", config, request_metadata
-        )
-
-    # User Request Management
-    def get_user_requests(
-        self,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user requests.
-
-        Args:
-            options (Dict[str, Any], optional): Filtering options for the requests
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("UserRequestGet", "POST", options, request_metadata)
-
-    def approve_user_request(
-        self,
-        request_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Approve a user request.
-
-        Args:
-            request_id (str): The ID of the request to approve
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "UserRequestApprove", "POST", {"requestid": request_id}, request_metadata
-        )
-
-    def reject_user_request(
-        self,
-        request_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Reject a user request.
-
-        Args:
-            request_id (str): The ID of the request to reject
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "UserRequestReject", "POST", {"requestid": request_id}, request_metadata
-        )
-
-    # Connector Management
-    def create_connector(
-        self,
-        name: str,
-        connector_type: str,
-        config: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new connector.
-
-        Args:
-            name (str): The name of the connector
-            connector_type (str): The type of connector
-            config (Dict[str, Any]): The connector configuration
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorCreate",
-            "POST",
-            {"name": name, "type": connector_type, "config": config},
-            request_metadata,
-        )
-
-    def get_connector(
-        self, connector_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Get connector information.
-
-        Args:
-            connector_id (str): The ID of the connector
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorGet", "POST", {"connectorid": connector_id}, request_metadata
-        )
-
-    def update_connector(
-        self,
-        connector_id: str,
-        name: str,
-        config: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update connector information.
-
-        Args:
-            connector_id (str): The ID of the connector
-            name (str): The new name for the connector
-            config (Dict[str, Any]): The updated connector configuration
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorUpdate",
-            "POST",
-            {"connectorid": connector_id, "name": name, "config": config},
-            request_metadata,
-        )
-
-    def delete_connector(
-        self, connector_id: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a connector.
-
-        Args:
-            connector_id (str): The ID of the connector to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorDelete", "POST", {"connectorid": connector_id}, request_metadata
-        )
-
-    def list_connectors(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all connectors.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("ConnectorList", "POST", None, request_metadata)
-
     # Session Management
     def create_session(
         self,
@@ -1393,48 +1937,57 @@ class DatabunkerproAPI:
     # Shared Record Management
     def create_shared_record(
         self,
-        record_type: str,
-        record_data: Dict[str, Any],
+        mode: str,
+        identity: str,
         options: Optional[Dict[str, Any]] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Create a new shared record.
+        Create a shared record for a user.
 
         Args:
-            record_type (str): The type of record
-            record_data (Dict[str, Any]): The record data
-            options (Dict[str, Any], optional): Additional options for record creation
+            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): The user's identifier
+            options (Dict[str, Any], optional): Optional parameters for shared record creation
+                - fields (str): A string containing names of fields to share separated by commas
+                - partner (str): It is used as a reference to partner name. It is not enforced.
+                - appname (str): If defined, shows fields from the user app record instead user profile
+                - finaltime (str): Expiration time for the shared record
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
-        data = {"type": record_type, "data": record_data}
-        if options:
-            data.update(options)
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "fields": options.get("fields") if options else None,
+            "partner": options.get("partner") if options else None,
+            "appname": options.get("appname") if options else None,
+            "finaltime": options.get("finaltime") if options else None,
+        }
         return self._make_request("SharedRecordCreate", "POST", data, request_metadata)
 
     def get_shared_record(
-        self, record_id: str, request_metadata: Optional[Dict[str, Any]] = None
+        self, record_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Get shared record information.
+        Get a shared record by its UUID.
 
         Args:
-            record_id (str): The ID of the record
+            record_uuid (str): UUID of the shared record to retrieve
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
-            Dict[str, Any]: The API response
+            Dict[str, Any]: The shared record information
         """
         return self._make_request(
-            "SharedRecordGet", "POST", {"recordid": record_id}, request_metadata
+            "SharedRecordGet", "POST", {"recorduuid": record_uuid}, request_metadata
         )
 
     def update_shared_record(
         self,
-        record_id: str,
+        record_uuid: str,
         record_data: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
@@ -1442,7 +1995,7 @@ class DatabunkerproAPI:
         Update shared record information.
 
         Args:
-            record_id (str): The ID of the record
+            record_uuid (str): The UUID of the record
             record_data (Dict[str, Any]): The updated record data
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
@@ -1452,25 +2005,25 @@ class DatabunkerproAPI:
         return self._make_request(
             "SharedRecordUpdate",
             "POST",
-            {"recordid": record_id, "data": record_data},
+            {"recorduuid": record_uuid, "data": record_data},
             request_metadata,
         )
 
     def delete_shared_record(
-        self, record_id: str, request_metadata: Optional[Dict[str, Any]] = None
+        self, record_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Delete a shared record.
 
         Args:
-            record_id (str): The ID of the record to delete
+            record_uuid (str): The UUID of the record to delete
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "SharedRecordDelete", "POST", {"recordid": record_id}, request_metadata
+            "SharedRecordDelete", "POST", {"recorduuid": record_uuid}, request_metadata
         )
 
     def list_shared_records(
@@ -1764,8 +2317,15 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
+        data = {
+            "activity": options.get("activity"),
+            "title": options.get("title"),
+            "script": options.get("script"),
+            "fulldesc": options.get("fulldesc"),
+            "applicableto": options.get("applicableto"),
+        }
         return self._make_request(
-            "ProcessingActivityCreate", "POST", options, request_metadata
+            "ProcessingActivityCreate", "POST", data, request_metadata
         )
 
     def update_processing_activity(
@@ -2624,6 +3184,22 @@ class DatabunkerproAPI:
         )
 
     # System Metrics
+    def get_system_stats(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Get system statistics.
+
+        Args:
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: System statistics including numusers, numtenants, numtokens, numsessions
+        """
+        return self._make_request(
+            "SystemGetSystemStats", "POST", None, request_metadata
+        )
+
     def get_system_metrics(
         self, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:

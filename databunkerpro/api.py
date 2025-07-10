@@ -468,6 +468,7 @@ class DatabunkerproAPI:
         """
         return self._make_request("CaptchaCreate", "POST", None, request_metadata)
 
+    # Create user API Access Token
     def create_x_token(
         self,
         mode: str,
@@ -476,16 +477,19 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Create an access token for a user.
+        Creates an access token for a user.
 
         Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
+            mode (str): User identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): User's identifier corresponding to the mode
             options (Dict[str, Any], optional): Optional parameters for token creation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+                - tokentype (str): Type of token (e.g., 'access', 'refresh')
+                - finaltime (str): Absolute expiration time for the token
+                - slidingtime (str): Sliding time period for the token
+            request_metadata (Dict[str, Any], optional): Optional request metadata
 
         Returns:
-            Dict[str, Any]: The API response
+            Dict[str, Any]: The created token information
         """
         data = {"mode": mode, "identity": identity}
         if options:
@@ -1439,326 +1443,6 @@ class DatabunkerproAPI:
             "SystemUpdateConfig", "POST", config, request_metadata
         )
 
-    # User Request Management
-    def get_user_requests(
-        self,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user requests.
-
-        Args:
-            options (Dict[str, Any], optional): Filtering options for the requests
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("UserRequestGet", "POST", options, request_metadata)
-
-    def approve_user_request(
-        self,
-        request_uuid: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Approve a user request.
-
-        Args:
-            request_uuid (str): The UUID of the request to approve
-            options (Dict[str, Any], optional): Optional parameters (only 'reason' is used)
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"requestuuid": request_uuid}
-        if options and "reason" in options:
-            data["reason"] = options["reason"]
-        return self._make_request("UserRequestApprove", "POST", data, request_metadata)
-
-    # Connector Management
-    def list_supported_connectors(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all supported connector types.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorListSupportedConnectors", "POST", None, request_metadata
-        )
-
-    def list_connectors_with_pagination(
-        self,
-        offset: int = 0,
-        limit: int = 10,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        List connectors with pagination.
-
-        Args:
-            offset (int, optional): Offset for pagination. Defaults to 0
-            limit (int, optional): Limit for pagination. Defaults to 10
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorListConnectors",
-            "POST",
-            {"offset": offset, "limit": limit},
-            request_metadata,
-        )
-
-    def create_connector(
-        self,
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create a new connector.
-
-        Args:
-            options (Dict[str, Any]): The connector options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {
-            "connectorname": options.get("connectorname"),
-            "connectortype": options.get("connectortype"),
-            "connectordesc": options.get("connectordesc"),
-            "username": options.get("username"),
-            "apikey": options.get("apikey"),
-            "dbhost": options.get("dbhost"),
-            "dbport": options.get("dbport"),
-            "dbname": options.get("dbname"),
-            "tablename": options.get("tablename"),
-            "status": options.get("status"),
-        }
-        return self._make_request("ConnectorCreate", "POST", data, request_metadata)
-
-    def update_connector(
-        self,
-        connector_id: Union[str, int],
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Update connector information.
-
-        Args:
-            connector_id (Union[str, int]): The ID of the connector
-            options (Dict[str, Any]): The connector update options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {
-            "connectorid": connector_id,
-            "connectorname": options.get("connectorname"),
-            "connectortype": options.get("connectortype"),
-            "connectordesc": options.get("connectordesc"),
-            "username": options.get("username"),
-            "apikey": options.get("apikey"),
-            "dbhost": options.get("dbhost"),
-            "dbport": options.get("dbport"),
-            "dbname": options.get("dbname"),
-            "tablename": options.get("tablename"),
-            "status": options.get("status"),
-        }
-        return self._make_request("ConnectorUpdate", "POST", data, request_metadata)
-
-    def validate_connector_connectivity(
-        self,
-        connector_id: Union[str, int],
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Validate connector connectivity.
-
-        Args:
-            connector_id (Union[str, int]): The connector ID
-            options (Dict[str, Any]): Connector configuration options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {
-            "connectortype": options.get("connectortype"),
-            "connectordesc": options.get("connectordesc"),
-            "username": options.get("username"),
-            "apikey": options.get("apikey"),
-            "dbhost": options.get("dbhost"),
-            "dbport": options.get("dbport"),
-            "dbname": options.get("dbname"),
-            "tablename": options.get("tablename"),
-            "status": options.get("status"),
-        }
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-            data["connectorname"] = options.get("connectorname")
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request(
-            "ConnectorValidateConnectivity", "POST", data, request_metadata
-        )
-
-    def delete_connector(
-        self,
-        connector_id: Union[str, int],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Delete a connector.
-
-        Args:
-            connector_id (Union[str, int]): The ID of the connector to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request("ConnectorDelete", "POST", data, request_metadata)
-
-    def get_table_metadata(
-        self,
-        connector_id: Union[str, int],
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get table metadata for a connector.
-
-        Args:
-            connector_id (Union[str, int]): The connector ID
-            options (Dict[str, Any]): Connector configuration options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {
-            "connectortype": options.get("connectortype"),
-            "connectordesc": options.get("connectordesc"),
-            "username": options.get("username"),
-            "apikey": options.get("apikey"),
-            "dbhost": options.get("dbhost"),
-            "dbport": options.get("dbport"),
-            "dbname": options.get("dbname"),
-            "tablename": options.get("tablename"),
-            "status": options.get("status"),
-        }
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-            data["connectorname"] = options.get("connectorname")
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request(
-            "ConnectorGetTableMetaData", "POST", data, request_metadata
-        )
-
-    def connector_get_user_data(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: Union[str, int],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (Union[str, int]): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request(
-            "ConnectorGetUserData", "POST", data, request_metadata
-        )
-
-    def connector_get_user_extra_data(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: Union[str, int],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user extra data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (Union[str, int]): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request(
-            "ConnectorGetUserExtraData", "POST", data, request_metadata
-        )
-
-    def connector_delete_user(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: Union[str, int],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Delete user data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (Union[str, int]): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data: Dict[str, Any] = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
-        else:
-            data["connectorname"] = connector_id
-        return self._make_request("ConnectorDeleteUser", "POST", data, request_metadata)
-
     # Token Management
     def create_token(
         self,
@@ -1943,11 +1627,11 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Create a shared record for a user.
+        Creates a shared record for a user.
 
         Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
+            mode (str): User identification mode (e.g., 'email', 'phone', 'token')
+            identity (str): User's identifier corresponding to the mode
             options (Dict[str, Any], optional): Optional parameters for shared record creation
                 - fields (str): A string containing names of fields to share separated by commas
                 - partner (str): It is used as a reference to partner name. It is not enforced.
@@ -1956,7 +1640,16 @@ class DatabunkerproAPI:
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
-            Dict[str, Any]: The API response
+            Dict[str, Any]: The created shared record information
+
+        Example:
+            # Create a shared record with specific fields
+            shared_record = await api.create_shared_record('email', 'user@example.com', {
+                'fields': 'name,email',
+                'partner': 'partner-org',
+                'appname': 'myapp',
+                'finaltime': '100d'
+            });
         """
         data = {
             "mode": mode,
@@ -1972,7 +1665,7 @@ class DatabunkerproAPI:
         self, record_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Get a shared record by its UUID.
+        Gets a shared record by its UUID.
 
         Args:
             record_uuid (str): UUID of the shared record to retrieve
@@ -1980,6 +1673,10 @@ class DatabunkerproAPI:
 
         Returns:
             Dict[str, Any]: The shared record information
+
+        Example:
+            # Get a shared record by UUID
+            shared_record = await api.get_shared_record('123e4567-e89b-12d3-a456-426614174000');
         """
         return self._make_request(
             "SharedRecordGet", "POST", {"recorduuid": record_uuid}, request_metadata
@@ -2043,38 +1740,33 @@ class DatabunkerproAPI:
         """
         return self._make_request("SharedRecordList", "POST", options, request_metadata)
 
-    # User Request Management
-    def get_user_request(
-        self, request_uuid: str, request_metadata: Optional[Dict[str, Any]] = None
+    # Connector Management
+    def list_supported_connectors(
+        self, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Get a specific user request by UUID.
+        List all supported connector types.
 
         Args:
-            request_uuid (str): UUID of the request to retrieve
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
         return self._make_request(
-            "UserRequestGet", "POST", {"requestuuid": request_uuid}, request_metadata
+            "ConnectorListSupportedConnectors", "POST", None, request_metadata
         )
 
-    def list_user_requests(
+    def list_connectors(
         self,
-        mode: str,
-        identity: str,
         offset: int = 0,
         limit: int = 10,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        List user requests for a specific user.
+        List connectors with pagination.
 
         Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
             offset (int, optional): Offset for pagination. Defaults to 0
             limit (int, optional): Limit for pagination. Defaults to 10
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
@@ -2082,208 +1774,248 @@ class DatabunkerproAPI:
         Returns:
             Dict[str, Any]: The API response
         """
+        data = {"offset": offset, "limit": limit}
         return self._make_request(
-            "UserRequestListUserRequests",
-            "POST",
-            {"mode": mode, "identity": identity, "offset": offset, "limit": limit},
-            request_metadata,
+            "ConnectorListConnectors", "POST", data, request_metadata
         )
 
-    def cancel_user_request(
+    def create_connector(
         self,
-        request_uuid: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Cancel a user request.
-
-        Args:
-            request_uuid (str): UUID of the request to cancel
-            options (Dict[str, Any], optional): Optional parameters for cancellation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"requestuuid": request_uuid}
-        if options:
-            data.update(options)
-        return self._make_request("UserRequestCancel", "POST", data, request_metadata)
-
-    # Legal Basis Management
-    def update_legal_basis(
-        self,
-        brief: str,
         options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Update an existing legal basis.
+        Creates a new database connector with the specified configuration.
 
         Args:
-            brief (str): Unique identifier for the legal basis
-            options (Dict[str, Any]): The legal basis update options
+            options (Dict[str, Any]): The connector configuration options
+                - connectorname (str): Name of the connector (e.g., "MySQL Production")
+                - connectortype (str): Type of the connector (e.g., 'mysql', 'postgresql', 'mongodb')
+                - apikey (str): API key for authentication with the database
+                - username (str, optional): Username for database connection
+                - connectordesc (str, optional): Description of the connector's purpose
+                - dbhost (str, optional): Database host address (e.g., "db.example.com")
+                - dbport (int, optional): Database port number (e.g., 3306 for MySQL)
+                - dbname (str, optional): Name of the database to connect to
+                - tablename (str, optional): Specific table name if applicable
+                - status (str, optional): Status of the connector (e.g., 'active', 'inactive')
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
-            Dict[str, Any]: The API response
+            Dict[str, Any]: The created connector details
         """
-        data = {"brief": brief, **options}
-        return self._make_request("LegalBasisUpdate", "POST", data, request_metadata)
+        data = {
+            "connectorname": options.get("connectorname"),
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        return self._make_request("ConnectorCreate", "POST", data, request_metadata)
 
-    def list_agreements(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all agreements.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "LegalBasisListAgreements", "POST", None, request_metadata
-        )
-
-    def delete_legal_basis(
-        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Delete a legal basis.
-
-        Args:
-            brief (str): Unique identifier for the legal basis to delete
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "LegalBasisDelete", "POST", {"brief": brief}, request_metadata
-        )
-
-    # Agreement Management
-    def cancel_agreement(
+    def update_connector(
         self,
-        mode: str,
-        identity: str,
-        brief: str,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Cancel an agreement for a user.
+        Update an existing connector.
+
+        Args:
+            connector_id (Union[str, int]): The ID of the connector to update
+            options (Dict[str, Any]): The connector update options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {"connectorid": connector_id}
+        data.update(options)
+        return self._make_request("ConnectorUpdate", "POST", data, request_metadata)
+
+    def validate_connector_connectivity(
+        self,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Validate connector connectivity.
+
+        Args:
+            connector_id (Union[str, int]): The ID of the connector
+            options (Dict[str, Any]): The connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+            data["connectorname"] = options.get("connectorname")
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorValidateConnectivity", "POST", data, request_metadata
+        )
+
+    def delete_connector(
+        self,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete a connector.
+
+        Args:
+            connector_id (Union[str, int]): The ID or name of the connector to delete
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request("ConnectorDelete", "POST", data, request_metadata)
+
+    def get_table_metadata(
+        self,
+        connector_id: Union[str, int],
+        options: Dict[str, Any],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get table metadata for a connector.
+
+        Args:
+            connector_id (Union[str, int]): The ID of the connector
+            options (Dict[str, Any]): The connector configuration options
+            request_metadata (Dict[str, Any], optional): Additional metadata for the request
+
+        Returns:
+            Dict[str, Any]: The API response
+        """
+        data = {
+            "connectortype": options.get("connectortype"),
+            "connectordesc": options.get("connectordesc"),
+            "username": options.get("username"),
+            "apikey": options.get("apikey"),
+            "dbhost": options.get("dbhost"),
+            "dbport": options.get("dbport"),
+            "dbname": options.get("dbname"),
+            "tablename": options.get("tablename"),
+            "status": options.get("status"),
+        }
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+            data["connectorname"] = options.get("connectorname")
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request(
+            "ConnectorGetTableMetaData", "POST", data, request_metadata
+        )
+
+    def connector_get_user_data(
+        self,
+        mode: str,
+        identity: str,
+        connector_id: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get user data from a connector.
 
         Args:
             mode (str): The identification mode (e.g., 'email', 'phone', 'token')
             identity (str): The user's identifier
-            brief (str): Unique identifier of the legal basis/agreement to cancel
+            connector_id (Union[str, int]): The ID of the connector
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
+        data = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
         return self._make_request(
-            "AgreementCancel",
-            "POST",
-            {"mode": mode, "identity": identity, "brief": brief},
-            request_metadata,
+            "ConnectorGetUserData", "POST", data, request_metadata
         )
 
-    def request_agreement_cancellation(
+    def connector_get_user_extra_data(
         self,
         mode: str,
         identity: str,
-        brief: str,
+        connector_id: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Request cancellation of an agreement for a user.
+        Get user extra data from a connector.
 
         Args:
             mode (str): The identification mode (e.g., 'email', 'phone', 'token')
             identity (str): The user's identifier
-            brief (str): Unique identifier of the legal basis/agreement to cancel
+            connector_id (Union[str, int]): The ID of the connector
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
+        data = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
         return self._make_request(
-            "AgreementCancelRequest",
-            "POST",
-            {"mode": mode, "identity": identity, "brief": brief},
-            request_metadata,
+            "ConnectorGetUserExtraData", "POST", data, request_metadata
         )
 
-    def get_user_agreement(
+    def connector_delete_user(
         self,
         mode: str,
         identity: str,
-        brief: str,
+        connector_id: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Get a specific agreement for a user.
+        Delete user data from a connector.
 
         Args:
             mode (str): The identification mode (e.g., 'email', 'phone', 'token')
             identity (str): The user's identifier
-            brief (str): Unique identifier of the legal basis/agreement
+            connector_id (Union[str, int]): The ID of the connector
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
             Dict[str, Any]: The API response
         """
-        return self._make_request(
-            "AgreementGet",
-            "POST",
-            {"mode": mode, "identity": identity, "brief": brief},
-            request_metadata,
-        )
-
-    def list_user_agreements(
-        self,
-        mode: str,
-        identity: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        List all agreements for a user.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "AgreementListUserAgreements",
-            "POST",
-            {"mode": mode, "identity": identity},
-            request_metadata,
-        )
-
-    def revoke_all_agreements(
-        self, brief: str, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Revoke all agreements for a specific legal basis.
-
-        Args:
-            brief (str): Unique identifier of the legal basis
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "AgreementRevokeAll", "POST", {"brief": brief}, request_metadata
-        )
+        data = {"mode": mode, "identity": identity}
+        if isinstance(connector_id, int) or str(connector_id).isdigit():
+            data["connectorid"] = connector_id
+        else:
+            data["connectorname"] = connector_id
+        return self._make_request("ConnectorDeleteUser", "POST", data, request_metadata)
 
     # Processing Activity Management
     def list_processing_activities(
@@ -2415,163 +2147,6 @@ class DatabunkerproAPI:
             request_metadata,
         )
 
-    # Enhanced Connector Management
-    def list_supported_connectors(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all supported connector types.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorListSupportedConnectors", "POST", None, request_metadata
-        )
-
-    def list_connectors_with_pagination(
-        self,
-        offset: int = 0,
-        limit: int = 10,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        List connectors with pagination.
-
-        Args:
-            offset (int, optional): Offset for pagination. Defaults to 0
-            limit (int, optional): Limit for pagination. Defaults to 10
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorListConnectors",
-            "POST",
-            {"offset": offset, "limit": limit},
-            request_metadata,
-        )
-
-    def validate_connector_connectivity(
-        self,
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Validate connector connectivity.
-
-        Args:
-            options (Dict[str, Any]): Connector configuration options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorValidateConnectivity", "POST", options, request_metadata
-        )
-
-    def get_table_metadata(
-        self,
-        options: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get table metadata for a connector.
-
-        Args:
-            options (Dict[str, Any]): Connector configuration options
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorGetTableMetaData", "POST", options, request_metadata
-        )
-
-    def connector_get_user_data(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (str): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorGetUserData",
-            "POST",
-            {"mode": mode, "identity": identity, "connectorid": connector_id},
-            request_metadata,
-        )
-
-    def connector_get_user_extra_data(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Get user extra data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (str): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorGetUserExtraData",
-            "POST",
-            {"mode": mode, "identity": identity, "connectorid": connector_id},
-            request_metadata,
-        )
-
-    def connector_delete_user(
-        self,
-        mode: str,
-        identity: str,
-        connector_id: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Delete user data from a connector.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            connector_id (str): The connector ID
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "ConnectorDeleteUser",
-            "POST",
-            {"mode": mode, "identity": identity, "connectorid": connector_id},
-            request_metadata,
-        )
-
     # Enhanced Group Management
     def list_all_groups(
         self, request_metadata: Optional[Dict[str, Any]] = None
@@ -2675,31 +2250,6 @@ class DatabunkerproAPI:
 
         return self._make_request("GroupAddUser", "POST", data, request_metadata)
 
-    # XToken Management
-    def create_x_token(
-        self,
-        mode: str,
-        identity: str,
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create an access token for a user.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            options (Dict[str, Any], optional): Optional parameters for token creation
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"mode": mode, "identity": identity}
-        if options:
-            data.update(options)
-        return self._make_request("XTokenCreate", "POST", data, request_metadata)
-
     # Enhanced Audit Management
     def list_user_audit_events(
         self,
@@ -2749,31 +2299,6 @@ class DatabunkerproAPI:
             request_metadata,
         )
 
-    # Enhanced Tenant Management
-    def list_tenants_with_pagination(
-        self,
-        offset: int = 0,
-        limit: int = 10,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        List tenants with pagination.
-
-        Args:
-            offset (int, optional): Offset for pagination. Defaults to 0
-            limit (int, optional): Limit for pagination. Defaults to 10
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "TenantListTenants",
-            "POST",
-            {"offset": offset, "limit": limit},
-            request_metadata,
-        )
-
     # Enhanced Role Management
     def link_policy(
         self,
@@ -2797,23 +2322,6 @@ class DatabunkerproAPI:
             "POST",
             {"rolename": role_name, "policyname": policy_name},
             request_metadata,
-        )
-
-    # Enhanced Policy Management
-    def list_policies_enhanced(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        List all policies with enhanced information.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "PolicyListAllPolicies", "POST", None, request_metadata
         )
 
     # Bulk Operations
@@ -3066,135 +2574,31 @@ class DatabunkerproAPI:
             request_metadata,
         )
 
-    # Enhanced Session Management
-    def upsert_session(
-        self,
-        session_uuid: str,
-        session_data: Dict[str, Any],
-        options: Optional[Dict[str, Any]] = None,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Create or update a session (upsert operation).
-
-        Args:
-            session_uuid (str): UUID of the session
-            session_data (Dict[str, Any]): Session data
-            options (Dict[str, Any], optional): Additional options for session creation/update
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        data = {"sessionuuid": session_uuid, "sessiondata": session_data}
-        if options:
-            data.update(options)
-        return self._make_request("SessionUpsert", "POST", data, request_metadata)
-
-    def list_user_sessions(
-        self,
-        mode: str,
-        identity: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        List all sessions for a specific user.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "SessionListUserSessions",
-            "POST",
-            {"mode": mode, "identity": identity},
-            request_metadata,
-        )
-
     # Captcha Management
-    def create_captcha(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Create a captcha for user verification.
-
-        Args:
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request("CaptchaCreate", "POST", None, request_metadata)
-
-    # User Patch Operations
-    def patch_user(
-        self,
-        mode: str,
-        identity: str,
-        patch: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Patch a user record with specific changes.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            patch (Dict[str, Any]): The patch data to apply
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "UserPatch",
-            "POST",
-            {"mode": mode, "identity": identity, "patch": patch},
-            request_metadata,
-        )
-
-    def request_user_patch(
-        self,
-        mode: str,
-        identity: str,
-        patch: Dict[str, Any],
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Request a user patch operation.
-
-        Args:
-            mode (str): The identification mode (e.g., 'email', 'phone', 'token')
-            identity (str): The user's identifier
-            patch (Dict[str, Any]): The patch data to apply
-            request_metadata (Dict[str, Any], optional): Additional metadata for the request
-
-        Returns:
-            Dict[str, Any]: The API response
-        """
-        return self._make_request(
-            "UserPatchRequest",
-            "POST",
-            {"mode": mode, "identity": identity, "patch": patch},
-            request_metadata,
-        )
 
     # System Metrics
     def get_system_stats(
         self, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Get system statistics.
+        Gets system statistics.
 
         Args:
             request_metadata (Dict[str, Any], optional): Additional metadata for the request
 
         Returns:
-            Dict[str, Any]: System statistics including numusers, numtenants, numtokens, numsessions
+            Dict[str, Any]: System statistics
+
+        Response format:
+        {
+          "status": "ok",
+          "stats": {
+            "numusers": 123,      // Total number of users in the system
+            "numtenants": 123,    // Total number of tenants
+            "numtokens": 123,     // Total number of tokens
+            "numsessions": 123    // Total number of active sessions
+          }
+        }
         """
         return self._make_request(
             "SystemGetSystemStats", "POST", None, request_metadata
@@ -3215,7 +2619,7 @@ class DatabunkerproAPI:
         try:
             response = requests.get(f"{self.base_url}/metrics")
             metrics_text = response.text
-            return self._parse_prometheus_metrics(metrics_text)
+            return self.parse_prometheus_metrics(metrics_text)
         except Exception as e:
             return {"status": "error", "message": f"Error getting metrics: {str(e)}"}
 
@@ -3247,3 +2651,15 @@ class DatabunkerproAPI:
                 metrics[metric_key] = float(value)
 
         return metrics
+
+    def parse_prometheus_metrics(self, metrics_text: str) -> Dict[str, Any]:
+        """
+        Parse Prometheus metrics text into a dictionary.
+
+        Args:
+            metrics_text (str): Raw metrics text in Prometheus format
+
+        Returns:
+            Dict[str, Any]: Parsed metrics
+        """
+        return self._parse_prometheus_metrics(metrics_text)

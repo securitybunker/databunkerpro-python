@@ -1956,9 +1956,9 @@ class DatabunkerproAPI:
         """
         data = {"mode": mode, "identity": identity}
         if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+            data["connectorid"] = str(connector_id)
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_id)
         return self._make_request(
             "ConnectorGetUserData", "POST", data, request_metadata
         )
@@ -1984,9 +1984,9 @@ class DatabunkerproAPI:
         """
         data = {"mode": mode, "identity": identity}
         if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+            data["connectorid"] = str(connector_id)
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_id)
         return self._make_request(
             "ConnectorGetUserExtraData", "POST", data, request_metadata
         )
@@ -2012,9 +2012,9 @@ class DatabunkerproAPI:
         """
         data = {"mode": mode, "identity": identity}
         if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+            data["connectorid"] = str(connector_id)
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_id)
         return self._make_request("ConnectorDeleteUser", "POST", data, request_metadata)
 
     # Processing Activity Management

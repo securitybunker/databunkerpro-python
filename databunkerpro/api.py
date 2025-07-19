@@ -822,7 +822,7 @@ class DatabunkerproAPI:
         if isinstance(group_id, int) or str(group_id).isdigit():
             data["groupid"] = group_id
         else:
-            data["groupname"] = group_id
+            data["groupname"] = str(group_id)
         return self._make_request("GroupGet", data, request_metadata)
 
     def list_all_groups(
@@ -855,7 +855,7 @@ class DatabunkerproAPI:
         if isinstance(group_id, int) or str(group_id).isdigit():
             data["groupid"] = group_id
         else:
-            data["groupname"] = group_id
+            data["groupname"] = str(group_id)
         return self._make_request("GroupUpdate", data, request_metadata)
 
     def delete_group(
@@ -868,7 +868,7 @@ class DatabunkerproAPI:
         if isinstance(group_id, int) or str(group_id).isdigit():
             data["groupid"] = group_id
         else:
-            data["groupname"] = group_id
+            data["groupname"] = str(group_id)
         return self._make_request("GroupDelete", data, request_metadata)
 
     def remove_user_from_group(
@@ -883,7 +883,7 @@ class DatabunkerproAPI:
         if isinstance(group_id, int) or str(group_id).isdigit():
             data["groupid"] = group_id
         else:
-            data["groupname"] = group_id
+            data["groupname"] = str(group_id)
         return self._make_request("GroupDeleteUser", data, request_metadata)
 
     def add_user_to_group(
@@ -1049,7 +1049,7 @@ class DatabunkerproAPI:
         if isinstance(role_id, int) or str(role_id).isdigit():
             data["roleid"] = role_id
         else:
-            data["rolename"] = role_id
+            data["rolename"] = str(role_id)
         return self._make_request("RoleUpdate", data, request_metadata)
 
     def link_policy(
@@ -1063,11 +1063,11 @@ class DatabunkerproAPI:
         if isinstance(role_id, int) or str(role_id).isdigit():
             data["roleid"] = role_id
         else:
-            data["rolename"] = role_id
+            data["rolename"] = str(role_id)
         if isinstance(policy_id, int) or str(policy_id).isdigit():
             data["policyid"] = policy_id
         else:
-            data["policyname"] = policy_id
+            data["policyname"] = str(policy_id)
         return self._make_request("RoleLinkPolicy", data, request_metadata)
 
     # Policy Management
@@ -1095,7 +1095,7 @@ class DatabunkerproAPI:
         if isinstance(policy_id, int) or str(policy_id).isdigit():
             data["policyid"] = policy_id
         else:
-            data["policyname"] = policy_id
+            data["policyname"] = str(policy_id)
         return self._make_request("PolicyUpdate", data, request_metadata)
 
     def get_policy(
@@ -1108,7 +1108,7 @@ class DatabunkerproAPI:
         if isinstance(policy_id, int) or str(policy_id).isdigit():
             data["policyid"] = policy_id
         else:
-            data["policyname"] = policy_id
+            data["policyname"] = str(policy_id)
         return self._make_request("PolicyGet", data, request_metadata)
 
     def list_policies(
@@ -1218,11 +1218,11 @@ class DatabunkerproAPI:
     # System Configuration
     def get_ui_conf(self) -> Dict[str, Any]:
         """Get UI configuration."""
-        return self._make_request("TenantGetUIConf", None, None)
+        return self._make_request("TenantGetUIConf")
 
     def get_tenant_conf(self) -> Dict[str, Any]:
         """Get tenant configuration."""
-        return self._make_request("TenantGetConf", None, None)
+        return self._make_request("TenantGetConf")
 
     def get_user_html_report(
         self,
@@ -1256,7 +1256,9 @@ class DatabunkerproAPI:
         """Gets system statistics."""
         return self._make_request("SystemGetSystemStats", None, request_metadata)
 
-    def get_system_metrics(self) -> Dict[str, Any]:
+    def get_system_metrics(
+        self, request_metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """Get system metrics in Prometheus format."""
         try:
             response = requests.get(f"{self.base_url}/metrics")

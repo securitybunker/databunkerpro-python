@@ -734,7 +734,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete a connector."""
-        data = {}
+        data: Dict[str, Any] = {}
         if isinstance(connector_ref, int) or str(connector_ref).isdigit():
             data["connectorid"] = int(connector_ref)
         else:
@@ -774,7 +774,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user data from a connector."""
-        data = {"mode": mode, "identity": identity}
+        data : Dict[str, Any] = {"mode": mode, "identity": identity}
         if isinstance(connector_ref, int) or str(connector_ref).isdigit():
             data["connectorid"] = int(connector_ref)
         else:
@@ -789,7 +789,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user extra data from a connector."""
-        data = {"mode": mode, "identity": identity}
+        data : Dict[str, Any] = {"mode": mode, "identity": identity}
         if isinstance(connector_ref, int) or str(connector_ref).isdigit():
             data["connectorid"] = int(connector_ref)
         else:
@@ -804,7 +804,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete user data from a connector."""
-        data = {"mode": mode, "identity": identity}
+        data : Dict[str, Any] = {"mode": mode, "identity": identity}
         if isinstance(connector_ref, int) or str(connector_ref).isdigit():
             data["connectorid"] = int(connector_ref)
         else:
@@ -831,7 +831,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get group information."""
-        data = {}
+        data : Dict[str, Any] = {}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
             data["groupid"] = int(group_ref)
         else:
@@ -874,7 +874,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete a group."""
-        data = {}
+        data : Dict[str, Any] = {}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
             data["groupid"] = int(group_ref)
         else:
@@ -889,7 +889,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Remove a user from a group."""
-        data = {"mode": mode, "identity": identity}
+        data : Dict[str, Any] = {"mode": mode, "identity": identity}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
             data["groupid"] = int(group_ref)
         else:
@@ -1069,7 +1069,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Link a policy to a role."""
-        data = {}
+        data : Dict[str, Any] = {}
         if isinstance(role_ref, int) or str(role_ref).isdigit():
             data["roleid"] = int(role_ref)
         else:
@@ -1114,7 +1114,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get policy information."""
-        data = {}
+        data : Dict[str, Any] = {}
         if isinstance(policy_ref, int) or str(policy_ref).isdigit():
             data["policyid"] = int(policy_ref)
         else:

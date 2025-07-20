@@ -689,17 +689,21 @@ class DatabunkerproAPI:
 
     def update_connector(
         self,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing connector."""
-        data = {"connectorid": connector_id, **options}
+        data = {**options}
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
+        else:
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorUpdate", data, request_metadata)
 
     def validate_connector_connectivity(
         self,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
@@ -715,31 +719,31 @@ class DatabunkerproAPI:
             "tablename": options.get("tablename"),
             "status": options.get("status"),
         }
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
             data["connectorname"] = options.get("connectorname")
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_ref)
         return self._make_request(
             "ConnectorValidateConnectivity", data, request_metadata
         )
 
     def delete_connector(
         self,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete a connector."""
         data = {}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorDelete", data, request_metadata)
 
     def get_table_metadata(
         self,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
@@ -755,56 +759,56 @@ class DatabunkerproAPI:
             "tablename": options.get("tablename"),
             "status": options.get("status"),
         }
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = connector_id
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
             data["connectorname"] = options.get("connectorname")
         else:
-            data["connectorname"] = connector_id
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorGetTableMetaData", data, request_metadata)
 
     def connector_get_user_data(
         self,
         mode: str,
         identity: str,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user data from a connector."""
         data = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = str(connector_id)
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
         else:
-            data["connectorname"] = str(connector_id)
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorGetUserData", data, request_metadata)
 
     def connector_get_user_extra_data(
         self,
         mode: str,
         identity: str,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user extra data from a connector."""
         data = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = str(connector_id)
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
         else:
-            data["connectorname"] = str(connector_id)
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorGetUserExtraData", data, request_metadata)
 
     def connector_delete_user(
         self,
         mode: str,
         identity: str,
-        connector_id: Union[str, int],
+        connector_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete user data from a connector."""
         data = {"mode": mode, "identity": identity}
-        if isinstance(connector_id, int) or str(connector_id).isdigit():
-            data["connectorid"] = str(connector_id)
+        if isinstance(connector_ref, int) or str(connector_ref).isdigit():
+            data["connectorid"] = int(connector_ref)
         else:
-            data["connectorname"] = str(connector_id)
+            data["connectorname"] = str(connector_ref)
         return self._make_request("ConnectorDeleteUser", data, request_metadata)
 
     # Group Management
@@ -829,7 +833,7 @@ class DatabunkerproAPI:
         """Get group information."""
         data = {}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
-            data["groupid"] = group_ref
+            data["groupid"] = int(group_ref)
         else:
             data["groupname"] = str(group_ref)
         return self._make_request("GroupGet", data, request_metadata)
@@ -872,7 +876,7 @@ class DatabunkerproAPI:
         """Delete a group."""
         data = {}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
-            data["groupid"] = group_ref
+            data["groupid"] = int(group_ref)
         else:
             data["groupname"] = str(group_ref)
         return self._make_request("GroupDelete", data, request_metadata)
@@ -887,7 +891,7 @@ class DatabunkerproAPI:
         """Remove a user from a group."""
         data = {"mode": mode, "identity": identity}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
-            data["groupid"] = group_ref
+            data["groupid"] = int(group_ref)
         else:
             data["groupname"] = str(group_ref)
         return self._make_request("GroupDeleteUser", data, request_metadata)
@@ -903,12 +907,12 @@ class DatabunkerproAPI:
         """Add a user to a group with an optional role."""
         data: Dict[str, Any] = {"mode": mode, "identity": identity}
         if isinstance(group_ref, int) or str(group_ref).isdigit():
-            data["groupid"] = group_ref
+            data["groupid"] = int(group_ref)
         else:
             data["groupname"] = str(group_ref)
         if role_ref is not None:
             if isinstance(role_ref, int) or str(role_ref).isdigit():
-                data["roleid"] = role_ref
+                data["roleid"] = int(role_ref)
             else:
                 data["rolename"] = str(role_ref)
         return self._make_request("GroupAddUser", data, request_metadata)
@@ -1067,11 +1071,11 @@ class DatabunkerproAPI:
         """Link a policy to a role."""
         data = {}
         if isinstance(role_ref, int) or str(role_ref).isdigit():
-            data["roleid"] = role_ref
+            data["roleid"] = int(role_ref)
         else:
             data["rolename"] = str(role_ref)
         if isinstance(policy_ref, int) or str(policy_ref).isdigit():
-            data["policyid"] = policy_ref
+            data["policyid"] = int(policy_ref)
         else:
             data["policyname"] = str(policy_ref)
         return self._make_request("RoleLinkPolicy", data, request_metadata)
@@ -1099,7 +1103,7 @@ class DatabunkerproAPI:
         """Update policy information."""
         data = {**options} if options else {}
         if isinstance(policy_id, int) or str(policy_id).isdigit():
-            data["policyid"] = policy_id
+            data["policyid"] = int(policy_id)
         else:
             data["policyname"] = str(policy_id)
         return self._make_request("PolicyUpdate", data, request_metadata)
@@ -1112,7 +1116,7 @@ class DatabunkerproAPI:
         """Get policy information."""
         data = {}
         if isinstance(policy_ref, int) or str(policy_ref).isdigit():
-            data["policyid"] = policy_ref
+            data["policyid"] = int(policy_ref)
         else:
             data["policyname"] = str(policy_ref)
         return self._make_request("PolicyGet", data, request_metadata)
@@ -1160,7 +1164,7 @@ class DatabunkerproAPI:
             "limit": limit,
         }
         if isinstance(group_ref, int) or str(group_ref).isdigit():
-            data["groupid"] = group_ref
+            data["groupid"] = int(group_ref)
         else:
             data["groupname"] = str(group_ref)
         return self._make_request("BulkListGroupUsers", data, request_metadata)

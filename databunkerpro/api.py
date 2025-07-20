@@ -493,7 +493,7 @@ class DatabunkerproAPI:
         mode: str,
         identity: str,
         brief: str,
-        options: Optional[Dict[str, Any]] = None,
+        options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Accept an agreement for a user."""
@@ -501,13 +501,19 @@ class DatabunkerproAPI:
             "mode": mode,
             "identity": identity,
             "brief": brief,
-            "agreementmethod": options.get("agreementmethod") if options else None,
-            "lastmodifiedby": options.get("lastmodifiedby") if options else None,
-            "referencecode": options.get("referencecode") if options else None,
-            "starttime": options.get("starttime") if options else None,
-            "finaltime": options.get("finaltime") if options else None,
-            "status": options.get("status") if options else None,
         }
+        if options.get("agreementmethod"):
+            data["agreementmethod"] = options["agreementmethod"]
+        if options.get("lastmodifiedby"):
+            data["lastmodifiedby"] = options["lastmodifiedby"]
+        if options.get("referencecode"):
+            data["referencecode"] = options["referencecode"]
+        if options.get("starttime"):
+            data["starttime"] = options["starttime"]
+        if options.get("finaltime"):
+            data["finaltime"] = options["finaltime"]
+        if options.get("status"):
+            data["status"] = options["status"]
         return self._make_request("AgreementAccept", data, request_metadata)
 
     def get_user_agreement(
@@ -804,14 +810,14 @@ class DatabunkerproAPI:
     # Group Management
     def create_group(
         self,
-        options: Optional[Dict[str, Any]] = None,
+        options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new group."""
         data = {
-            "groupname": options.get("groupname") if options else None,
-            "groupdesc": options.get("groupdesc") if options else None,
-            "grouptype": options.get("grouptype") if options else None,
+            "groupname": options.get("groupname"),
+            "groupdesc": options.get("groupdesc"),
+            "grouptype": options.get("grouptype"),
         }
         return self._make_request("GroupCreate", data, request_metadata)
 
@@ -1028,13 +1034,13 @@ class DatabunkerproAPI:
     # Role Management
     def create_role(
         self,
-        options: Optional[Dict[str, Any]] = None,
+        options: Dict[str, Any],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new role."""
         data = {
-            "rolename": options.get("rolename") if options else None,
-            "roledesc": options.get("roledesc") if options else None,
+            "rolename": options.get("rolename"),
+            "roledesc": options.get("roledesc"),
         }
         return self._make_request("RoleCreate", data, request_metadata)
 

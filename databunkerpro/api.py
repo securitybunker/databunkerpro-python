@@ -90,6 +90,7 @@ class DatabunkerproAPI:
         """Create a new user in DatabunkerPro."""
         data = {"profile": profile}
         if options:
+            # Handle groupname/groupid
             if "groupname" in options:
                 if str(options["groupname"]).isdigit():
                     data["groupid"] = options["groupname"]
@@ -97,6 +98,7 @@ class DatabunkerproAPI:
                     data["groupname"] = options["groupname"]
             elif "groupid" in options:
                 data["groupid"] = options["groupid"]
+            # Handle rolename/roleid
             if "rolename" in options:
                 if str(options["rolename"]).isdigit():
                     data["roleid"] = options["rolename"]
@@ -104,6 +106,7 @@ class DatabunkerproAPI:
                     data["rolename"] = options["rolename"]
             elif "roleid" in options:
                 data["roleid"] = options["roleid"]
+            # Handle time parameters
             if "slidingtime" in options:
                 data["slidingtime"] = options["slidingtime"]
             if "finaltime" in options:
@@ -814,15 +817,15 @@ class DatabunkerproAPI:
 
     def get_group(
         self,
-        group_id: Union[str, int],
+        group_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get group information."""
         data = {}
-        if isinstance(group_id, int) or str(group_id).isdigit():
-            data["groupid"] = group_id
+        if isinstance(group_ref, int) or str(group_ref).isdigit():
+            data["groupid"] = group_ref
         else:
-            data["groupname"] = str(group_id)
+            data["groupname"] = str(group_ref)
         return self._make_request("GroupGet", data, request_metadata)
 
     def list_all_groups(
@@ -846,65 +849,62 @@ class DatabunkerproAPI:
 
     def update_group(
         self,
-        group_id: Union[str, int],
+        group_id: int,
         options: Optional[Dict[str, Any]] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update group information."""
         data = {**options} if options else {}
-        if isinstance(group_id, int) or str(group_id).isdigit():
-            data["groupid"] = group_id
-        else:
-            data["groupname"] = str(group_id)
+        data["groupid"] = group_id
         return self._make_request("GroupUpdate", data, request_metadata)
 
     def delete_group(
         self,
-        group_id: Union[str, int],
+        group_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delete a group."""
         data = {}
-        if isinstance(group_id, int) or str(group_id).isdigit():
-            data["groupid"] = group_id
+        if isinstance(group_ref, int) or str(group_ref).isdigit():
+            data["groupid"] = group_ref
         else:
-            data["groupname"] = str(group_id)
+            data["groupname"] = str(group_ref)
         return self._make_request("GroupDelete", data, request_metadata)
 
     def remove_user_from_group(
         self,
         mode: str,
         identity: str,
-        group_id: Union[str, int],
+        group_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Remove a user from a group."""
         data = {"mode": mode, "identity": identity}
-        if isinstance(group_id, int) or str(group_id).isdigit():
-            data["groupid"] = group_id
+        if isinstance(group_ref, int) or str(group_ref).isdigit():
+            data["groupid"] = group_ref
         else:
-            data["groupname"] = str(group_id)
+            data["groupname"] = str(group_ref)
         return self._make_request("GroupDeleteUser", data, request_metadata)
 
     def add_user_to_group(
         self,
         mode: str,
         identity: str,
-        group_name: Union[str, int],
-        role_name: Optional[Union[str, int]] = None,
+        group_ref: Union[str, int],
+        role_ref: Optional[Union[str, int]] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Add a user to a group with an optional role."""
         data: Dict[str, Any] = {"mode": mode, "identity": identity}
-        if isinstance(group_name, int) or str(group_name).isdigit():
-            data["groupid"] = group_name
+        if isinstance(group_ref, int) or str(group_ref).isdigit():
+            data["groupid"] = group_ref
         else:
-            data["groupname"] = str(group_name)
-        if role_name is not None:
-            if isinstance(role_name, int) or str(role_name).isdigit():
-                data["roleid"] = role_name
+            data["groupname"] = str(group_ref)
+        if role_ref is not None:
+            if isinstance(role_ref, int) or str(role_ref).isdigit():
+                data["roleid"] = role_ref
             else:
-                data["rolename"] = str(role_name)
+                data["rolename"] = str(role_ref)
         return self._make_request("GroupAddUser", data, request_metadata)
 
     # Token Management
@@ -1054,20 +1054,20 @@ class DatabunkerproAPI:
 
     def link_policy(
         self,
-        role_id: Union[str, int],
-        policy_id: Union[str, int],
+        role_ref: Union[str, int],
+        policy_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Link a policy to a role."""
         data = {}
-        if isinstance(role_id, int) or str(role_id).isdigit():
-            data["roleid"] = role_id
+        if isinstance(role_ref, int) or str(role_ref).isdigit():
+            data["roleid"] = role_ref
         else:
-            data["rolename"] = str(role_id)
-        if isinstance(policy_id, int) or str(policy_id).isdigit():
-            data["policyid"] = policy_id
+            data["rolename"] = str(role_ref)
+        if isinstance(policy_ref, int) or str(policy_ref).isdigit():
+            data["policyid"] = policy_ref
         else:
-            data["policyname"] = str(policy_id)
+            data["policyname"] = str(policy_ref)
         return self._make_request("RoleLinkPolicy", data, request_metadata)
 
     # Policy Management
@@ -1100,15 +1100,15 @@ class DatabunkerproAPI:
 
     def get_policy(
         self,
-        policy_id: Union[str, int],
+        policy_ref: Union[str, int],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get policy information."""
         data = {}
-        if isinstance(policy_id, int) or str(policy_id).isdigit():
-            data["policyid"] = policy_id
+        if isinstance(policy_ref, int) or str(policy_ref).isdigit():
+            data["policyid"] = policy_ref
         else:
-            data["policyname"] = str(policy_id)
+            data["policyname"] = str(policy_ref)
         return self._make_request("PolicyGet", data, request_metadata)
 
     def list_policies(
@@ -1142,7 +1142,7 @@ class DatabunkerproAPI:
     def bulk_list_group_users(
         self,
         unlock_uuid: str,
-        group_id: Union[str, int],
+        group_ref: Union[str, int],
         offset: int = 0,
         limit: int = 10,
         request_metadata: Optional[Dict[str, Any]] = None,
@@ -1153,10 +1153,10 @@ class DatabunkerproAPI:
             "offset": offset,
             "limit": limit,
         }
-        if isinstance(group_id, int) or str(group_id).isdigit():
-            data["groupid"] = group_id
+        if isinstance(group_ref, int) or str(group_ref).isdigit():
+            data["groupid"] = group_ref
         else:
-            data["groupname"] = str(group_id)
+            data["groupname"] = str(group_ref)
         return self._make_request("BulkListGroupUsers", data, request_metadata)
 
     def bulk_list_user_requests(

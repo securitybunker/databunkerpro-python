@@ -3,7 +3,7 @@
 import json
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict, Union
 
 import requests
 
@@ -1463,7 +1463,7 @@ class DatabunkerproAPI:
         self,
         session_uuid: str,
         session_data: Dict[str, Any],
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[BasicOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create or update a session (upsert operation)."""

@@ -3,9 +3,154 @@
 import json
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TypedDict
 
 import requests
+
+
+# Type definitions for better type safety and documentation
+class ConnectorOptions(TypedDict, total=False):
+    """Options for connector operations."""
+
+    connectorid: Optional[Union[str, int]]
+    connectorname: Optional[str]
+    connectortype: Optional[str]
+    apikey: Optional[str]
+    username: Optional[str]
+    connectordesc: Optional[str]
+    dbhost: Optional[str]
+    dbport: Optional[int]
+    dbname: Optional[str]
+    tablename: Optional[str]
+    status: Optional[str]
+
+
+class UserOptions(TypedDict, total=False):
+    """Options for user operations."""
+
+    groupname: Optional[Union[str, int]]
+    groupid: Optional[int]
+    rolename: Optional[Union[str, int]]
+    roleid: Optional[int]
+    slidingtime: Optional[str]
+    finaltime: Optional[str]
+
+
+class LegalBasisOptions(TypedDict, total=False):
+    """Options for legal basis operations."""
+
+    brief: str
+    status: Optional[str]
+    module: Optional[str]
+    fulldesc: Optional[str]
+    shortdesc: Optional[str]
+    basistype: Optional[str]
+    requiredmsg: Optional[str]
+    requiredflag: Optional[bool]
+
+
+class LegalBasisUpdateOptions(TypedDict, total=False):
+    """Options for legal basis update operations."""
+
+    status: Optional[str]
+    module: Optional[str]
+    fulldesc: Optional[str]
+    shortdesc: Optional[str]
+    basistype: Optional[str]
+    requiredmsg: Optional[str]
+    requiredflag: Optional[bool]
+
+
+class AgreementAcceptOptions(TypedDict, total=False):
+    """Options for agreement acceptance."""
+
+    agreementmethod: Optional[str]
+    referencecode: Optional[str]
+    starttime: Optional[str]
+    finaltime: Optional[str]
+    status: Optional[str]
+    lastmodifiedby: Optional[str]
+
+
+class GroupOptions(TypedDict, total=False):
+    """Options for group operations."""
+
+    groupname: str
+    grouptype: Optional[str]
+    groupdesc: Optional[str]
+
+
+class RoleOptions(TypedDict, total=False):
+    """Options for role operations."""
+
+    rolename: str
+    roledesc: Optional[str]
+
+
+class TenantOptions(TypedDict, total=False):
+    """Options for tenant operations."""
+
+    tenantname: str
+    tenantorg: str
+    email: str
+
+
+class ProcessingActivityOptions(TypedDict, total=False):
+    """Options for processing activity operations."""
+
+    activity: str
+    title: Optional[str]
+    script: Optional[str]
+    fulldesc: Optional[str]
+    applicableto: Optional[str]
+
+
+class ProcessingActivityUpdateOptions(TypedDict, total=False):
+    """Options for processing activity update operations."""
+
+    newactivity: Optional[str]
+    title: Optional[str]
+    script: Optional[str]
+    fulldesc: Optional[str]
+    applicableto: Optional[str]
+
+
+class SharedRecordOptions(TypedDict, total=False):
+    """Options for shared record operations."""
+
+    fields: Optional[
+        str
+    ]  # A string containing names of fields to share separated by commas
+    partner: Optional[
+        str
+    ]  # It is used as a reference to partner name. It is not enforced.
+    appname: Optional[
+        str
+    ]  # If defined, shows fields from the user app record instead of user profile
+    finaltime: Optional[str]  # Expiration time for the shared record
+
+
+class BasicOptions(TypedDict, total=False):
+    """Basic options for operations."""
+
+    finaltime: Optional[str]
+    slidingtime: Optional[str]
+
+
+class TokenOptions(TypedDict, total=False):
+    """Options for token operations."""
+
+    unique: Optional[bool]
+    slidingtime: Optional[str]
+    finaltime: Optional[str]
+
+
+class PolicyOptions(TypedDict, total=False):
+    """Options for policy operations."""
+
+    policyname: str
+    policydesc: Optional[str]
+    policy: Any
 
 
 class DatabunkerproAPI:
@@ -84,11 +229,11 @@ class DatabunkerproAPI:
     def create_user(
         self,
         profile: Dict[str, Any],
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[UserOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new user in DatabunkerPro."""
-        data = {"profile": profile}
+        data: Dict[str, Any] = {"profile": profile}
         if options:
             # Handle groupname/groupid
             if "groupname" in options:
@@ -116,11 +261,11 @@ class DatabunkerproAPI:
     def create_users_bulk(
         self,
         records: List[Dict[str, Any]],
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[BasicOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create multiple users in bulk."""
-        data = {
+        data: Dict[str, Any] = {
             "records": [
                 {
                     "profile": record["profile"],
@@ -297,18 +442,34 @@ class DatabunkerproAPI:
         """Create a captcha for user verification."""
         return self._make_request("CaptchaCreate", None, request_metadata)
 
-    def create_x_token(
+    def create_user_x_token(
         self,
         mode: str,
         identity: str,
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[BasicOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Creates an access token for a user."""
         data = {"mode": mode, "identity": identity}
         if options:
             data.update(options)
-        return self._make_request("XTokenCreate", data, request_metadata)
+        return self._make_request("XTokenCreateForUser", data, request_metadata)
+
+    def create_role_x_token(
+        self,
+        role_ref: Union[str, int],
+        options: Optional[BasicOptions] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Creates an access token for a role."""
+        data: Dict[str, Any] = {}
+        if options:
+            data.update(options)
+        if isinstance(role_ref, int) or str(role_ref).isdigit():
+            data["roleid"] = int(role_ref)
+        else:
+            data["rolename"] = str(role_ref)
+        return self._make_request("XTokenCreateForRole", data, request_metadata)
 
     # User Request Management
     def get_user_request(
@@ -345,8 +506,8 @@ class DatabunkerproAPI:
     ) -> Dict[str, Any]:
         """Cancel a user request."""
         data = {"requestuuid": request_uuid}
-        if options:
-            data.update(options)
+        if options and "reason" in options:
+            data["reason"] = options["reason"]
         return self._make_request("UserRequestCancel", data, request_metadata)
 
     def approve_user_request(
@@ -449,7 +610,9 @@ class DatabunkerproAPI:
 
     # Legal Basis Management
     def create_legal_basis(
-        self, options: Dict[str, Any], request_metadata: Optional[Dict[str, Any]] = None
+        self,
+        options: LegalBasisOptions,
+        request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a legal basis for data processing."""
         data = {
@@ -467,7 +630,7 @@ class DatabunkerproAPI:
     def update_legal_basis(
         self,
         brief: str,
-        options: Dict[str, Any],
+        options: LegalBasisUpdateOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing legal basis."""
@@ -493,11 +656,11 @@ class DatabunkerproAPI:
         mode: str,
         identity: str,
         brief: str,
-        options: Dict[str, Any],
+        options: AgreementAcceptOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Accept an agreement for a user."""
-        data = {
+        data: Dict[str, Any] = {
             "mode": mode,
             "identity": identity,
             "brief": brief,
@@ -524,7 +687,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get a specific agreement for a user."""
-        data = {
+        data: Dict[str, Any] = {
             "mode": mode,
             "identity": identity,
             "brief": brief,
@@ -591,7 +754,9 @@ class DatabunkerproAPI:
         )
 
     def create_processing_activity(
-        self, options: Dict[str, Any], request_metadata: Optional[Dict[str, Any]] = None
+        self,
+        options: ProcessingActivityOptions,
+        request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new processing activity."""
         data = {
@@ -606,7 +771,7 @@ class DatabunkerproAPI:
     def update_processing_activity(
         self,
         activity: str,
-        options: Dict[str, Any],
+        options: ProcessingActivityUpdateOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing processing activity."""
@@ -670,7 +835,9 @@ class DatabunkerproAPI:
         return self._make_request("ConnectorListConnectors", data, request_metadata)
 
     def create_connector(
-        self, options: Dict[str, Any], request_metadata: Optional[Dict[str, Any]] = None
+        self,
+        options: ConnectorOptions,
+        request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Creates a new database connector with the specified configuration."""
         data = {
@@ -690,7 +857,7 @@ class DatabunkerproAPI:
     def update_connector(
         self,
         connector_ref: Union[str, int],
-        options: Dict[str, Any],
+        options: ConnectorOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing connector."""
@@ -704,7 +871,7 @@ class DatabunkerproAPI:
     def validate_connector_connectivity(
         self,
         connector_ref: Union[str, int],
-        options: Dict[str, Any],
+        options: ConnectorOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Validate connector connectivity."""
@@ -744,7 +911,7 @@ class DatabunkerproAPI:
     def get_table_metadata(
         self,
         connector_ref: Union[str, int],
-        options: Dict[str, Any],
+        options: ConnectorOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get table metadata for a connector."""
@@ -814,7 +981,7 @@ class DatabunkerproAPI:
     # Group Management
     def create_group(
         self,
-        options: Dict[str, Any],
+        options: GroupOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new group."""
@@ -860,11 +1027,11 @@ class DatabunkerproAPI:
     def update_group(
         self,
         group_id: int,
-        options: Optional[Dict[str, Any]] = None,
+        options: GroupOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update group information."""
-        data = {**options} if options else {}
+        data = {**options}
         data["groupid"] = group_id
         return self._make_request("GroupUpdate", data, request_metadata)
 
@@ -922,7 +1089,7 @@ class DatabunkerproAPI:
         self,
         token_type: str,
         record: str,
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[TokenOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a token for sensitive data."""
@@ -934,7 +1101,7 @@ class DatabunkerproAPI:
     def create_tokens_bulk(
         self,
         records: List[Dict[str, Any]],
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[TokenOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create multiple tokens in bulk."""
@@ -983,7 +1150,7 @@ class DatabunkerproAPI:
 
     # Tenant Management
     def create_tenant(
-        self, options: Dict[str, Any], request_metadata: Optional[Dict[str, Any]] = None
+        self, options: TenantOptions, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Create a new tenant."""
         data = {
@@ -1006,7 +1173,7 @@ class DatabunkerproAPI:
     def update_tenant(
         self,
         tenant_id: Union[str, int],
-        options: Dict[str, Any],
+        options: TenantOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update tenant information."""
@@ -1038,7 +1205,7 @@ class DatabunkerproAPI:
     # Role Management
     def create_role(
         self,
-        options: Dict[str, Any],
+        options: RoleOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new role."""
@@ -1051,11 +1218,11 @@ class DatabunkerproAPI:
     def update_role(
         self,
         role_id: Union[str, int],
-        options: Optional[Dict[str, Any]] = None,
+        options: RoleOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update role information."""
-        data = {**options} if options else {}
+        data = {**options}
         if isinstance(role_id, int) or str(role_id).isdigit():
             data["roleid"] = role_id
         else:
@@ -1083,25 +1250,25 @@ class DatabunkerproAPI:
     # Policy Management
     def create_policy(
         self,
-        options: Optional[Dict[str, Any]] = None,
+        options: PolicyOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new policy."""
         data = {
-            "policyname": options.get("policyname") if options else None,
-            "policydesc": options.get("policydesc") if options else None,
-            "policy": options.get("policy") if options else None,
+            "policyname": options.get("policyname"),
+            "policydesc": options.get("policydesc"),
+            "policy": options.get("policy"),
         }
         return self._make_request("PolicyCreate", data, request_metadata)
 
     def update_policy(
         self,
         policy_id: Union[str, int],
-        options: Optional[Dict[str, Any]] = None,
+        options: PolicyOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update policy information."""
-        data = {**options} if options else {}
+        data = {**options}
         if isinstance(policy_id, int) or str(policy_id).isdigit():
             data["policyid"] = int(policy_id)
         else:
@@ -1232,7 +1399,7 @@ class DatabunkerproAPI:
 
     def get_tenant_conf(self) -> Dict[str, Any]:
         """Get tenant configuration."""
-        return self._make_request("TenantGetConf")
+        return self._make_request("TenantGetUIConf")
 
     def get_user_html_report(
         self,
@@ -1338,7 +1505,7 @@ class DatabunkerproAPI:
         self,
         mode: str,
         identity: str,
-        options: Optional[Dict[str, Any]] = None,
+        options: Optional[SharedRecordOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Creates a shared record for a user."""

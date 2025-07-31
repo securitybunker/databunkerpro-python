@@ -3,7 +3,7 @@
 import json
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, Dict, List, Optional, TypedDict, Union, cast
 
 import requests
 
@@ -452,7 +452,7 @@ class DatabunkerproAPI:
         """Creates an access token for a user."""
         data = {"mode": mode, "identity": identity}
         if options:
-            data.update(options)
+            data.update(cast(Dict[str, Any], options))
         return self._make_request("XTokenCreateForUser", data, request_metadata)
 
     def create_role_x_token(
@@ -464,7 +464,7 @@ class DatabunkerproAPI:
         """Creates an access token for a role."""
         data: Dict[str, Any] = {}
         if options:
-            data.update(options)
+            data.update(cast(Dict[str, Any], options))
         if isinstance(role_ref, int) or str(role_ref).isdigit():
             data["roleid"] = int(role_ref)
         else:
@@ -1095,7 +1095,7 @@ class DatabunkerproAPI:
         """Create a token for sensitive data."""
         data = {"tokentype": token_type, "record": record}
         if options:
-            data.update(options)
+            data.update(cast(Dict[str, Any], options))
         return self._make_request("TokenCreate", data, request_metadata)
 
     def create_tokens_bulk(
@@ -1107,7 +1107,7 @@ class DatabunkerproAPI:
         """Create multiple tokens in bulk."""
         data = {"records": records}
         if options:
-            data.update(options)
+            data.update(cast(Dict[str, Any], options))
         return self._make_request("TokenCreateBulk", data, request_metadata)
 
     def get_token(
@@ -1469,7 +1469,7 @@ class DatabunkerproAPI:
         """Create or update a session (upsert operation)."""
         data = {"sessionuuid": session_uuid, "sessiondata": session_data}
         if options:
-            data.update(options)
+            data.update(cast(Dict[str, Any], options))
         return self._make_request("SessionUpsert", data, request_metadata)
 
     def delete_session(

@@ -153,6 +153,22 @@ class PolicyOptions(TypedDict, total=False):
     policy: Any
 
 
+class PolicyUpdateOptions(TypedDict, total=False):
+    """Options for policy update operations."""
+
+    policyname: Optional[str]
+    policydesc: Optional[str]
+    policy: Any
+
+
+class PatchOperation(TypedDict, total=False):
+    """Represents a patch operation for user data."""
+
+    op: str  # Operation type (e.g., 'add', 'replace', 'remove')
+    path: str  # JSON path to the field to modify
+    value: Optional[Any]  # New value for the field
+
+
 class DatabunkerproAPI:
     """Main client class for interacting with the DatabunkerPro API."""
 
@@ -264,7 +280,33 @@ class DatabunkerproAPI:
         options: Optional[BasicOptions] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Create multiple users in bulk."""
+        """
+        Creates multiple users in bulk with their profiles and group information.
+
+        Args:
+            records: Array of user records to create
+            options: Global options for all users
+            request_metadata: Additional metadata to include with the request
+
+        Returns:
+            The created users information
+
+        Example:
+            # Create multiple users with global time settings
+            users = api.create_users_bulk([
+                {
+                    "profile": {"email": "user1@example.com", "name": "User One"},
+                    "groupname": "premium"
+                },
+                {
+                    "profile": {"email": "user2@example.com", "name": "User Two"},
+                    "groupid": 123
+                }
+            ], {
+                "finaltime": "100d",
+                "slidingtime": "30d"
+            })
+        """
         data: Dict[str, Any] = {
             "records": [
                 {
@@ -351,7 +393,7 @@ class DatabunkerproAPI:
         self,
         mode: str,
         identity: str,
-        patch: Dict[str, Any],
+        patch: List[PatchOperation],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Patch a user record with specific changes."""
@@ -366,7 +408,7 @@ class DatabunkerproAPI:
         self,
         mode: str,
         identity: str,
-        patch: Dict[str, Any],
+        patch: List[PatchOperation],
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Request a user patch operation."""
@@ -504,7 +546,7 @@ class DatabunkerproAPI:
         options: Optional[Dict[str, Any]] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Cancel a user request."""
+        """Cancels a user request."""
         data = {"requestuuid": request_uuid}
         if options and "reason" in options:
             data["reason"] = options["reason"]
@@ -1264,7 +1306,7 @@ class DatabunkerproAPI:
     def update_policy(
         self,
         policy_id: Union[str, int],
-        options: PolicyOptions,
+        options: PolicyUpdateOptions,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update policy information."""
@@ -1457,6 +1499,33 @@ class DatabunkerproAPI:
                 metric_key = f"{name}{{{labels}}}" if labels else name
                 metrics[metric_key] = float(value)
         return metrics
+
+    def generate_wrapping_key(
+        self,
+        key1: str,
+        key2: str,
+        key3: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Generates a wrapping key from three Shamir's Secret Sharing keys.
+
+        Args:
+            key1: First Shamir secret sharing key
+            key2: Second Shamir secret sharing key
+            key3: Third Shamir secret sharing key
+            request_metadata: Optional request metadata
+
+        Returns:
+            Dict containing the generated wrapping key
+
+        Example:
+            >>> result = api.generate_wrapping_key("key1", "key2", "key3")
+            >>> print(result)
+            {'status': 'ok', 'wrappingkey': 'generated-wrapping-key-value'}
+        """
+        data = {"key1": key1, "key2": key2, "key3": key3}
+        return self._make_request("SystemGenerateWrappingKey", data, request_metadata)
 
     # Session Management
     def upsert_session(

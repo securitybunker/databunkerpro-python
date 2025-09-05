@@ -26,7 +26,7 @@ setup(
     ],
     python_requires=">=3.7",
     install_requires=[
-        "requests>=2.32.2",
+        "requests>=2.32.4",
     ],
     extras_require={
         "dev": [

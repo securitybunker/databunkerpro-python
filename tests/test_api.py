@@ -163,37 +163,39 @@ class TestDatabunkerproAPI(unittest.TestCase):
         # Step 1: Create 10 users using bulk creation
         users_data = []
         for i in range(10):
-            users_data.append({
-                "profile": {
-                    "email": f"bulktest{random.randint(1000, 999999)}@example.com",
-                    "name": f"Bulk Test User {i+1}",
-                    "phone": str(random.randint(1000000, 9999999)),
+            users_data.append(
+                {
+                    "profile": {
+                        "email": f"bulktest{random.randint(1000, 999999)}@example.com",
+                        "name": f"Bulk Test User {i+1}",
+                        "phone": str(random.randint(1000000, 9999999)),
+                    }
                 }
-            })
-        
+            )
+
         # Create users in bulk
         bulk_options = {"finaltime": "1y", "slidingtime": "30d"}
         create_result = self.api.create_users_bulk(users_data, bulk_options)
-        
+
         # Verify bulk creation was successful
         self.assertIsInstance(create_result, dict)
         self.assertEqual(create_result.get("status"), "ok")
         self.assertIn("created", create_result)
         self.assertEqual(len(create_result["created"]), 10)
-        
+
         # Store created user tokens for verification
         created_tokens = [user["token"] for user in create_result["created"]]
-        
+
         # Step 2: Initiate bulk list unlock operation
         unlock_result = self.api.bulk_list_unlock()
-        
+
         # Verify unlock operation was successful
         self.assertIsInstance(unlock_result, dict)
         self.assertEqual(unlock_result.get("status"), "ok")
         self.assertIn("unlockuuid", unlock_result)
-        
+
         unlock_uuid = unlock_result["unlockuuid"]
-        
+
         # Step 3: Fetch all users using bulk list operation
         # First, get the total count by fetching with a large limit
         bulk_users_result = self.api.bulk_list_users(unlock_uuid, offset=0, limit=100)
@@ -202,11 +204,11 @@ class TestDatabunkerproAPI(unittest.TestCase):
         self.assertIsInstance(bulk_users_result, dict)
         self.assertEqual(bulk_users_result.get("status"), "ok")
         self.assertIn("rows", bulk_users_result)
-        
+
         # Verify we can find our created users in the bulk results
         bulk_users = bulk_users_result["rows"]
         found_created_users = 0
-        
+
         for bulk_user in bulk_users:
             if "token" in bulk_user and bulk_user["token"] in created_tokens:
                 found_created_users += 1
@@ -215,34 +217,41 @@ class TestDatabunkerproAPI(unittest.TestCase):
                 self.assertIn("email", user_profile)
                 self.assertIn("name", user_profile)
                 self.assertIn("phone", user_profile)
-        
+
         # Verify we found all our created users
-        self.assertEqual(found_created_users, 10, 
-                       f"Expected to find 10 created users in bulk results, but found {found_created_users}")
-        
+        self.assertEqual(
+            found_created_users,
+            10,
+            f"Expected to find 10 created users in bulk results, but found {found_created_users}",
+        )
+
         # Step 4: Test pagination by fetching users in smaller batches
         paginated_users = []
         offset = 0
         limit = 5
-        
+
         while True:
-            page_result = self.api.bulk_list_users(unlock_uuid, offset=offset, limit=limit)
+            page_result = self.api.bulk_list_users(
+                unlock_uuid, offset=offset, limit=limit
+            )
             self.assertEqual(page_result.get("status"), "ok")
-            
+
             page_users = page_result.get("rows", [])
             if not page_users:
                 break
-                
+
             paginated_users.extend(page_users)
             offset += limit
-            
+
             # Safety break to prevent infinite loops
             if offset > 100:
                 break
-        
+
         # Verify pagination worked and we got users
-        self.assertGreater(len(paginated_users), 0, "Pagination should return some users")
-        
+        self.assertGreater(
+            len(paginated_users), 0, "Pagination should return some users"
+        )
+
         # Clean up: Delete the created users
         for token in created_tokens:
             try:
@@ -252,7 +261,7 @@ class TestDatabunkerproAPI(unittest.TestCase):
                     print(f"Warning: Failed to delete user with token {token}")
             except Exception as e:
                 print(f"Warning: Exception during cleanup for token {token}: {str(e)}")
-        
+
         return created_tokens
 
 

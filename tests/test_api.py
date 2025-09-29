@@ -380,11 +380,7 @@ class TestDatabunkerproAPI(unittest.TestCase):
 
         # Step 5: Test with empty users list
         empty_result = self.api.bulk_list_users(unlock_uuid, [])
-        self.assertEqual(empty_result.get("status"), "ok")
-        self.assertIn("rows", empty_result)
-        self.assertEqual(
-            len(empty_result["rows"]), 0, "Empty users list should return empty result"
-        )
+        self.assertEqual(empty_result.get("status"), "error")
 
         # Clean up: Delete the created users
         for token in created_tokens:

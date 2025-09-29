@@ -722,7 +722,21 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing legal basis."""
-        data = {"brief": brief, **options}
+        data = {"brief": brief}
+        if options.get("status") is not None:
+            data["status"] = options["status"]
+        if options.get("module") is not None:
+            data["module"] = options["module"]
+        if options.get("fulldesc") is not None:
+            data["fulldesc"] = options["fulldesc"]
+        if options.get("shortdesc") is not None:
+            data["shortdesc"] = options["shortdesc"]
+        if options.get("basistype") is not None:
+            data["basistype"] = options["basistype"]
+        if options.get("requiredmsg") is not None:
+            data["requiredmsg"] = options["requiredmsg"]
+        if options.get("requiredflag") is not None:
+            data["requiredflag"] = options["requiredflag"]
         return self._make_request("LegalBasisUpdate", data, request_metadata)
 
     def delete_legal_basis(
@@ -863,7 +877,17 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing processing activity."""
-        data = {"activity": activity, **options}
+        data = {"activity": activity}
+        if options.get("newactivity") is not None:
+            data["newactivity"] = options["newactivity"]
+        if options.get("title") is not None:
+            data["title"] = options["title"]
+        if options.get("script") is not None:
+            data["script"] = options["script"]
+        if options.get("fulldesc") is not None:
+            data["fulldesc"] = options["fulldesc"]
+        if options.get("applicableto") is not None:
+            data["applicableto"] = options["applicableto"]
         return self._make_request("ProcessingActivityUpdate", data, request_metadata)
 
     def delete_processing_activity(
@@ -1265,7 +1289,13 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update tenant information."""
-        data = {"tenantid": tenant_id, **options}
+        data = {"tenantid": tenant_id}
+        if options.get("tenantname") is not None:
+            data["tenantname"] = options["tenantname"]
+        if options.get("tenantorg") is not None:
+            data["tenantorg"] = options["tenantorg"]
+        if options.get("email") is not None:
+            data["email"] = options["email"]
         return self._make_request("TenantUpdate", data, request_metadata)
 
     def delete_tenant(

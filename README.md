@@ -57,6 +57,7 @@ print(f"Created token in uuid format: {token_result['tokenuuid']}")
 ## Features
 
 - User Management (create, read, update, delete)
+- Credit Card Management
 - Token Management
 - System Statistics
 - Type hints and comprehensive documentation

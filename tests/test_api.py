@@ -189,7 +189,7 @@ class TestDatabunkerproAPI(unittest.TestCase):
         # Store created user tokens and emails for verification
         created_tokens = [user["token"] for user in create_result["created"]]
         created_user_identities = [
-            {"mode": "email", "identity": user["profile"]["email"]} 
+            {"mode": "email", "identity": user["profile"]["email"]}
             for user in create_result["created"]
         ]
 
@@ -207,24 +207,34 @@ class TestDatabunkerproAPI(unittest.TestCase):
         # Select first 5 users for subset testing
         subset_users = created_user_identities[:5]
         subset_result = self.api.bulk_list_users(unlock_uuid, subset_users)
-        
+
         # Verify subset fetch was successful
         self.assertIsInstance(subset_result, dict)
         self.assertEqual(subset_result.get("status"), "ok")
         self.assertIn("rows", subset_result)
-        
+
         # Verify we got the expected number of users in subset
         subset_users_returned = subset_result["rows"]
-        self.assertLessEqual(len(subset_users_returned), 5, "Subset should not exceed requested users")
-        
+        self.assertLessEqual(
+            len(subset_users_returned), 5, "Subset should not exceed requested users"
+        )
+
         # Verify subset users are from our created set
-        subset_emails = [user.get("profile", {}).get("email") for user in subset_users_returned]
+        subset_emails = [
+            user.get("profile", {}).get("email") for user in subset_users_returned
+        ]
         for email in subset_emails:
             if email:  # Only check if email exists
-                self.assertIn(email, created_emails, f"Email {email} should be from our created users")
+                self.assertIn(
+                    email,
+                    created_emails,
+                    f"Email {email} should be from our created users",
+                )
 
         # Step 4: Fetch all users using bulk list operation
-        bulk_users_result = self.api.bulk_list_all_users(unlock_uuid, offset=0, limit=100)
+        bulk_users_result = self.api.bulk_list_all_users(
+            unlock_uuid, offset=0, limit=100
+        )
 
         # Verify bulk fetch was successful
         self.assertIsInstance(bulk_users_result, dict)
@@ -316,7 +326,7 @@ class TestDatabunkerproAPI(unittest.TestCase):
         # Store created user data
         created_tokens = [user["token"] for user in create_result["created"]]
         created_user_identities = [
-            {"mode": "email", "identity": user["profile"]["email"]} 
+            {"mode": "email", "identity": user["profile"]["email"]}
             for user in create_result["created"]
         ]
 
@@ -326,43 +336,55 @@ class TestDatabunkerproAPI(unittest.TestCase):
         unlock_uuid = unlock_result["unlockuuid"]
 
         # Step 3: Test bulk_list_users with all created users
-        all_users_result = self.api.bulk_list_users(unlock_uuid, created_user_identities)
-        
+        all_users_result = self.api.bulk_list_users(
+            unlock_uuid, created_user_identities
+        )
+
         # Verify the result
         self.assertEqual(all_users_result.get("status"), "ok")
         self.assertIn("rows", all_users_result)
-        
+
         returned_users = all_users_result["rows"]
-        self.assertLessEqual(len(returned_users), 5, "Should not return more users than requested")
-        
+        self.assertLessEqual(
+            len(returned_users), 5, "Should not return more users than requested"
+        )
+
         # Verify all returned users are from our created set
-        returned_emails = [user.get("profile", {}).get("email") for user in returned_users]
+        returned_emails = [
+            user.get("profile", {}).get("email") for user in returned_users
+        ]
         for email in returned_emails:
             if email:
-                self.assertIn(email, test_emails, f"Email {email} should be from our test users")
+                self.assertIn(
+                    email, test_emails, f"Email {email} should be from our test users"
+                )
 
         # Step 4: Test bulk_list_users with subset (first 3 users)
         subset_identities = created_user_identities[:3]
         subset_result = self.api.bulk_list_users(unlock_uuid, subset_identities)
-        
+
         # Verify subset result
         self.assertEqual(subset_result.get("status"), "ok")
         self.assertIn("rows", subset_result)
-        
+
         subset_users = subset_result["rows"]
         self.assertLessEqual(len(subset_users), 3, "Subset should not exceed 3 users")
-        
+
         # Verify subset users are from our created set
         subset_emails = [user.get("profile", {}).get("email") for user in subset_users]
         for email in subset_emails:
             if email:
-                self.assertIn(email, test_emails, f"Email {email} should be from our test users")
+                self.assertIn(
+                    email, test_emails, f"Email {email} should be from our test users"
+                )
 
         # Step 5: Test with empty users list
         empty_result = self.api.bulk_list_users(unlock_uuid, [])
         self.assertEqual(empty_result.get("status"), "ok")
         self.assertIn("rows", empty_result)
-        self.assertEqual(len(empty_result["rows"]), 0, "Empty users list should return empty result")
+        self.assertEqual(
+            len(empty_result["rows"]), 0, "Empty users list should return empty result"
+        )
 
         # Clean up: Delete the created users
         for token in created_tokens:

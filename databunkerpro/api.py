@@ -354,7 +354,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user information from DatabunkerPro."""
-        data = {
+        data: Dict[str, Any] = {
             "mode": mode,
             "identity": identity,
         }
@@ -722,7 +722,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing legal basis."""
-        data = {"brief": brief}
+        data: Dict[str, Any] = {"brief": brief}
         if options.get("status") is not None:
             data["status"] = options["status"]
         if options.get("module") is not None:
@@ -877,7 +877,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update an existing processing activity."""
-        data = {"activity": activity}
+        data: Dict[str, Any] = {"activity": activity}
         if options.get("newactivity") is not None:
             data["newactivity"] = options["newactivity"]
         if options.get("title") is not None:
@@ -1289,7 +1289,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Update tenant information."""
-        data = {"tenantid": tenant_id}
+        data: Dict[str, Any] = {"tenantid": tenant_id}
         if options.get("tenantname") is not None:
             data["tenantname"] = options["tenantname"]
         if options.get("tenantorg") is not None:

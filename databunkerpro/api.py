@@ -350,6 +350,7 @@ class DatabunkerproAPI:
         self,
         mode: str,
         identity: str,
+        version: Optional[int] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Get user information from DatabunkerPro."""
@@ -357,6 +358,8 @@ class DatabunkerproAPI:
             "mode": mode,
             "identity": identity,
         }
+        if version is not None:
+            data["version"] = version
         return self._make_request("UserGet", data, request_metadata)
 
     def update_user(
@@ -444,6 +447,34 @@ class DatabunkerproAPI:
             "identity": identity,
         }
         return self._make_request("UserDeleteRequest", data, request_metadata)
+
+    def search_user(
+        self,
+        mode: str,
+        identity: str,
+        unlock_uuid: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Search for a user with unlock UUID."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "unlockuuid": unlock_uuid,
+        }
+        return self._make_request("UserSearch", data, request_metadata)
+
+    def list_user_versions(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """List all versions of a user record."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+        }
+        return self._make_request("UserListVersions", data, request_metadata)
 
     # User Authentication
     def prelogin_user(
@@ -649,6 +680,21 @@ class DatabunkerproAPI:
     ) -> Dict[str, Any]:
         """List all application names in the system."""
         return self._make_request("AppdataListAppNames", None, request_metadata)
+
+    def list_app_data_versions(
+        self,
+        mode: str,
+        identity: str,
+        appname: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """List all versions of application data for a user."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "appname": appname,
+        }
+        return self._make_request("AppdataListVersions", data, request_metadata)
 
     # Legal Basis Management
     def create_legal_basis(
@@ -1346,17 +1392,30 @@ class DatabunkerproAPI:
     def bulk_list_users(
         self,
         unlock_uuid: str,
+        users: List[Dict[str, str]],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """List specific users in a bulk operation."""
+        data = {
+            "unlockuuid": unlock_uuid,
+            "users": users,
+        }
+        return self._make_request("BulkListUsers", data, request_metadata)
+
+    def bulk_list_all_users(
+        self,
+        unlock_uuid: str,
         offset: int = 0,
         limit: int = 10,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """List users in a bulk operation."""
+        """List all users in a bulk operation with pagination."""
         data = {
             "unlockuuid": unlock_uuid,
             "offset": offset,
             "limit": limit,
         }
-        return self._make_request("BulkListUsers", data, request_metadata)
+        return self._make_request("BulkListAllUsers", data, request_metadata)
 
     def bulk_list_group_users(
         self,

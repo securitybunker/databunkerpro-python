@@ -1467,35 +1467,35 @@ class DatabunkerproAPI:
             data["groupname"] = str(group_ref)
         return self._make_request("BulkListGroupUsers", data, request_metadata)
 
-    def bulk_list_user_requests(
+    def bulk_list_all_user_requests(
         self,
         unlock_uuid: str,
         offset: int = 0,
         limit: int = 10,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """List user requests in a bulk operation."""
+        """List all user requests in a bulk operation."""
         data = {
             "unlockuuid": unlock_uuid,
             "offset": offset,
             "limit": limit,
         }
-        return self._make_request("BulkListUserRequests", data, request_metadata)
+        return self._make_request("BulkListAllUserRequests", data, request_metadata)
 
-    def bulk_list_audit_events(
+    def bulk_list_all_audit_events(
         self,
         unlock_uuid: str,
         offset: int = 0,
         limit: int = 10,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """List audit events in a bulk operation."""
+        """List all audit events in a bulk operation."""
         data = {
             "unlockuuid": unlock_uuid,
             "offset": offset,
             "limit": limit,
         }
-        return self._make_request("BulkListAuditEvents", data, request_metadata)
+        return self._make_request("BulkListAllAuditEvents", data, request_metadata)
 
     def bulk_list_tokens(
         self,

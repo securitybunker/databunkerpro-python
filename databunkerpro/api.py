@@ -435,6 +435,33 @@ class DatabunkerproAPI:
         }
         return self._make_request("UserDelete", data, request_metadata)
 
+    def delete_users_bulk(
+        self,
+        users: List[Dict[str, str]],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Delete multiple users in bulk from DatabunkerPro.
+
+        Args:
+            users: List of user dictionaries containing mode and identity for each user to delete
+            request_metadata: Optional request metadata
+
+        Returns:
+            Dict containing the result of the bulk deletion operation
+
+        Example:
+            >>> users_to_delete = [
+            ...     {"mode": "email", "identity": "user1@example.com"},
+            ...     {"mode": "phone", "identity": "+1234567890"}
+            ... ]
+            >>> result = api.delete_users_bulk(users_to_delete)
+            >>> print(result)
+            {'status': 'ok', 'deleted_count': 2}
+        """
+        data = {"users": users}
+        return self._make_request("UserDeleteBulk", data, request_metadata)
+
     def request_user_deletion(
         self,
         mode: str,
@@ -1615,6 +1642,29 @@ class DatabunkerproAPI:
         """
         data = {"key1": key1, "key2": key2, "key3": key3}
         return self._make_request("SystemGenerateWrappingKey", data, request_metadata)
+
+    def set_license_key(
+        self,
+        license_key: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Set the license key for the system.
+
+        Args:
+            license_key: The license key to set
+            request_metadata: Optional request metadata
+
+        Returns:
+            Dict containing the result of the license key setting operation
+
+        Example:
+            >>> result = api.set_license_key("your-license-key-here")
+            >>> print(result)
+            {'status': 'ok', 'message': 'License key set successfully'}
+        """
+        data = {"licensekey": license_key}
+        return self._make_request("SystemSetLicenseKey", data, request_metadata)
 
     # Session Management
     def upsert_session(

@@ -477,14 +477,12 @@ class DatabunkerproAPI:
 
     def search_user(
         self,
-        mode: str,
         identity: str,
         unlock_uuid: str,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Search for a user with unlock UUID."""
+        """Search for a user with unlock UUID. Mode is auto-detected from identity."""
         data = {
-            "mode": mode,
             "identity": identity,
             "unlockuuid": unlock_uuid,
         }
@@ -1571,6 +1569,34 @@ class DatabunkerproAPI:
             "identity": identity,
         }
         return self._make_request("SystemGetUserHTMLReport", data, request_metadata)
+
+    def get_user_profiles(
+        self,
+        mode: str,
+        identity: str,
+        unlock_uuid: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Get user profiles across all tenants. Only accessible by the main tenant admin."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "unlockuuid": unlock_uuid,
+        }
+        return self._make_request("SystemGetUserProfiles", data, request_metadata)
+
+    def search_user_profiles(
+        self,
+        identity: str,
+        unlock_uuid: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Fuzzy-search user profiles across all tenants. Only accessible by the main tenant admin."""
+        data = {
+            "identity": identity,
+            "unlockuuid": unlock_uuid,
+        }
+        return self._make_request("SystemSearchUserProfiles", data, request_metadata)
 
     def get_user_report(
         self,

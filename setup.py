@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="databunkerpro",
-    version="0.1.2",
+    version="0.1.3",
     author="Databunker team",
     author_email="hello@databunker.org",
     description="Python client library for DatabunkerPro API",

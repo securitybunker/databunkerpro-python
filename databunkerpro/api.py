@@ -313,14 +313,28 @@ class DatabunkerproAPI:
                     "profile": record["profile"],
                     **(
                         {"groupid": int(record["groupname"])}
-                        if "groupname" in record and str(record.get("groupname", "")).isdigit()
-                        else ({"groupname": record["groupname"]} if "groupname" in record else {})
+                        if "groupname" in record
+                        and str(record.get("groupname", "")).isdigit()
+                        else (
+                            {"groupname": record["groupname"]}
+                            if "groupname" in record
+                            else {}
+                        )
                     ),
-                    **({"groupid": int(record["groupid"])} if "groupid" in record else {}),
+                    **(
+                        {"groupid": int(record["groupid"])}
+                        if "groupid" in record
+                        else {}
+                    ),
                     **(
                         {"roleid": int(record["rolename"])}
-                        if "rolename" in record and str(record.get("rolename", "")).isdigit()
-                        else ({"rolename": record["rolename"]} if "rolename" in record else {})
+                        if "rolename" in record
+                        and str(record.get("rolename", "")).isdigit()
+                        else (
+                            {"rolename": record["rolename"]}
+                            if "rolename" in record
+                            else {}
+                        )
                     ),
                     **({"roleid": int(record["roleid"])} if "roleid" in record else {}),
                 }

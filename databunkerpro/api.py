@@ -254,19 +254,19 @@ class DatabunkerproAPI:
             # Handle groupname/groupid
             if "groupname" in options:
                 if str(options["groupname"]).isdigit():
-                    data["groupid"] = options["groupname"]
+                    data["groupid"] = int(options["groupname"])
                 else:
                     data["groupname"] = options["groupname"]
             elif "groupid" in options:
-                data["groupid"] = options["groupid"]
+                data["groupid"] = int(options["groupid"])
             # Handle rolename/roleid
             if "rolename" in options:
                 if str(options["rolename"]).isdigit():
-                    data["roleid"] = options["rolename"]
+                    data["roleid"] = int(options["rolename"])
                 else:
                     data["rolename"] = options["rolename"]
             elif "roleid" in options:
-                data["roleid"] = options["roleid"]
+                data["roleid"] = int(options["roleid"])
             # Handle time parameters
             if "slidingtime" in options:
                 data["slidingtime"] = options["slidingtime"]
@@ -312,29 +312,17 @@ class DatabunkerproAPI:
                 {
                     "profile": record["profile"],
                     **(
-                        {
-                            (
-                                "groupid"
-                                if str(record.get("groupname", "")).isdigit()
-                                else "groupname"
-                            ): record["groupname"]
-                        }
-                        if "groupname" in record
-                        else {}
+                        {"groupid": int(record["groupname"])}
+                        if "groupname" in record and str(record.get("groupname", "")).isdigit()
+                        else ({"groupname": record["groupname"]} if "groupname" in record else {})
                     ),
-                    **({"groupid": record["groupid"]} if "groupid" in record else {}),
+                    **({"groupid": int(record["groupid"])} if "groupid" in record else {}),
                     **(
-                        {
-                            (
-                                "roleid"
-                                if str(record.get("rolename", "")).isdigit()
-                                else "rolename"
-                            ): record["rolename"]
-                        }
-                        if "rolename" in record
-                        else {}
+                        {"roleid": int(record["rolename"])}
+                        if "rolename" in record and str(record.get("rolename", "")).isdigit()
+                        else ({"rolename": record["rolename"]} if "rolename" in record else {})
                     ),
-                    **({"roleid": record["roleid"]} if "roleid" in record else {}),
+                    **({"roleid": int(record["roleid"])} if "roleid" in record else {}),
                 }
                 for record in records
             ]
@@ -1169,7 +1157,7 @@ class DatabunkerproAPI:
     ) -> Dict[str, Any]:
         """Update group information."""
         data = {**options}
-        data["groupid"] = group_id
+        data["groupid"] = int(group_id)
         return self._make_request("GroupUpdate", data, request_metadata)
 
     def delete_group(
@@ -1367,7 +1355,7 @@ class DatabunkerproAPI:
         """Update role information."""
         data = {**options}
         if isinstance(role_id, int) or str(role_id).isdigit():
-            data["roleid"] = role_id
+            data["roleid"] = int(role_id)
         else:
             data["rolename"] = str(role_id)
         return self._make_request("RoleUpdate", data, request_metadata)
@@ -1597,6 +1585,45 @@ class DatabunkerproAPI:
             "unlockuuid": unlock_uuid,
         }
         return self._make_request("SystemSearchUserProfiles", data, request_metadata)
+
+    def delete_user_profiles(
+        self,
+        mode: str,
+        identity: str,
+        unlock_uuid: str,
+        tenant_ref: Optional[Union[str, int]] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Delete user profiles across all tenants. Only accessible by the main tenant admin."""
+        data: Dict[str, Any] = {
+            "mode": mode,
+            "identity": identity,
+            "unlockuuid": unlock_uuid,
+        }
+        if tenant_ref is not None:
+            if isinstance(tenant_ref, int) or str(tenant_ref).isdigit():
+                data["tenantid"] = int(tenant_ref)
+            else:
+                data["tenantname"] = str(tenant_ref)
+        return self._make_request("SystemDeleteUserProfiles", data, request_metadata)
+
+    def restore_user_profile(
+        self,
+        token: str,
+        unlock_uuid: str,
+        tenant_ref: Union[str, int],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Restore a deleted user profile for a specific tenant. Only accessible by the main tenant admin."""
+        data: Dict[str, Any] = {
+            "token": token,
+            "unlockuuid": unlock_uuid,
+        }
+        if isinstance(tenant_ref, int) or str(tenant_ref).isdigit():
+            data["tenantid"] = int(tenant_ref)
+        else:
+            data["tenantname"] = str(tenant_ref)
+        return self._make_request("SystemRestoreUserProfile", data, request_metadata)
 
     def get_user_report(
         self,

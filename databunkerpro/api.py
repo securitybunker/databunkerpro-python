@@ -252,20 +252,20 @@ class DatabunkerproAPI:
         data: Dict[str, Any] = {"profile": profile}
         if options:
             # Handle groupname/groupid
-            if "groupname" in options:
+            if "groupname" in options and options["groupname"] is not None:
                 if str(options["groupname"]).isdigit():
                     data["groupid"] = int(options["groupname"])
                 else:
                     data["groupname"] = options["groupname"]
-            elif "groupid" in options:
+            elif "groupid" in options and options["groupid"] is not None:
                 data["groupid"] = int(options["groupid"])
             # Handle rolename/roleid
-            if "rolename" in options:
+            if "rolename" in options and options["rolename"] is not None:
                 if str(options["rolename"]).isdigit():
                     data["roleid"] = int(options["rolename"])
                 else:
                     data["rolename"] = options["rolename"]
-            elif "roleid" in options:
+            elif "roleid" in options and options["roleid"] is not None:
                 data["roleid"] = int(options["roleid"])
             # Handle time parameters
             if "slidingtime" in options:
@@ -314,29 +314,35 @@ class DatabunkerproAPI:
                     **(
                         {"groupid": int(record["groupname"])}
                         if "groupname" in record
-                        and str(record.get("groupname", "")).isdigit()
+                        and record["groupname"] is not None
+                        and str(record["groupname"]).isdigit()
                         else (
                             {"groupname": record["groupname"]}
-                            if "groupname" in record
+                            if "groupname" in record and record["groupname"] is not None
                             else {}
                         )
                     ),
                     **(
                         {"groupid": int(record["groupid"])}
-                        if "groupid" in record
+                        if "groupid" in record and record["groupid"] is not None
                         else {}
                     ),
                     **(
                         {"roleid": int(record["rolename"])}
                         if "rolename" in record
-                        and str(record.get("rolename", "")).isdigit()
+                        and record["rolename"] is not None
+                        and str(record["rolename"]).isdigit()
                         else (
                             {"rolename": record["rolename"]}
-                            if "rolename" in record
+                            if "rolename" in record and record["rolename"] is not None
                             else {}
                         )
                     ),
-                    **({"roleid": int(record["roleid"])} if "roleid" in record else {}),
+                    **(
+                        {"roleid": int(record["roleid"])}
+                        if "roleid" in record and record["roleid"] is not None
+                        else {}
+                    ),
                 }
                 for record in records
             ]

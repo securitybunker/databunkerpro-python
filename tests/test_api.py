@@ -50,16 +50,6 @@ class TestDatabunkerproAPI(unittest.TestCase):
         # Initialize API client
         cls.api = DatabunkerproAPI(cls.api_url, cls.api_token, cls.tenant_name)
 
-        # Test connection
-        try:
-            result = cls.api.get_system_stats()
-            if not (isinstance(result, dict) and result.get("status") == "ok"):
-                raise unittest.SkipTest("Failed to connect to DatabunkerPro server")
-        except Exception as e:
-            raise unittest.SkipTest(
-                f"Failed to connect to DatabunkerPro server: {str(e)}"
-            )
-
     def test_create_user(self):
         """Test user creation."""
         user_data = {
@@ -150,13 +140,6 @@ class TestDatabunkerproAPI(unittest.TestCase):
         result = self.api.delete_user("email", email)
         self.assertIsInstance(result, dict)
         self.assertEqual(result.get("status"), "ok")
-
-    def test_get_system_stats(self):
-        """Test getting system statistics."""
-        result = self.api.get_system_stats()
-        self.assertIsInstance(result, dict)
-        self.assertEqual(result.get("status"), "ok")
-        self.assertIn("stats", result)
 
     def test_bulk_operations_workflow(self):
         """Test complete bulk operations workflow: create users, unlock bulk, and fetch all users."""

@@ -62,6 +62,7 @@ print(f"Created token in uuid format: {token_result['tokenuuid']}")
 - System Statistics
 - Type hints and comprehensive documentation
 - Error handling and validation
+- Continuous security scanning (Semgrep SAST, pinned CI actions)
 
 ## Development
 
@@ -82,6 +83,26 @@ pip install -e ".[dev]"
 ```bash
 pytest
 ```
+
+## Security
+
+This library is scanned on every push and pull request, with a weekly scheduled sweep to catch drift:
+
+- **SAST (Semgrep):** static analysis using the `p/python`, `p/secrets`, `p/security-audit`, and `p/owasp-top-ten` rulesets. A finding fails the check, and results are published to the repository's **Code Scanning** tab. See [`.github/workflows/semgrep.yml`](.github/workflows/semgrep.yml).
+- **Supply-chain hardening:** every GitHub Action is pinned to a full commit SHA, so a mutable tag (`@v4`) cannot be silently repointed to malicious code.
+
+Reproduce the SAST scan locally:
+
+```bash
+pip install semgrep
+semgrep scan \
+    --config p/python \
+    --config p/secrets \
+    --config p/security-audit \
+    --config p/owasp-top-ten
+```
+
+To report a security vulnerability, please email hello@databunker.org rather than opening a public issue.
 
 ## Contributing
 

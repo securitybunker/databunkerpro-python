@@ -1,0 +1,22 @@
+# Caller: scans THIS repo using the shared reusable Semgrep workflow in databunker-devops.
+# Ruleset = Python language pack + the common security packs (see semgrep-reusable.yml).
+name: semgrep
+
+on:
+  workflow_dispatch:        # manual "Run workflow" button in the Actions tab
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "13 7 * * 1"    # weekly full sweep (Mon 07:13 UTC) — offset from gitleaks (06:27)
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sast:
+    name: sast              # display + required-check name
+    uses: securitybunker/databunker-devops/.github/workflows/semgrep-reusable.yml@main
+    with:
+      config: "p/python p/secrets p/security-audit p/owasp-top-ten"

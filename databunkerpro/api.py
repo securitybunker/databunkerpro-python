@@ -763,13 +763,24 @@ class DatabunkerproAPI:
         self,
         mode: str,
         identity: str,
+        tag: Optional[str] = None,
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """List the metadata of all files owned by a user."""
-        data = {
+        """List the metadata of all files owned by a user.
+
+        Args:
+            mode: User identification mode (login, token, email, phone, custom)
+            identity: User identifier corresponding to the mode
+            tag: Optional. Return only files carrying this tag. A single tag
+                only — a comma-separated list is not split.
+            request_metadata: Additional metadata to include with the request
+        """
+        data: Dict[str, Any] = {
             "mode": mode,
             "identity": identity,
         }
+        if tag is not None:
+            data["tag"] = tag
         return self._make_request("FileListUserFiles", data, request_metadata)
 
     def replace_file_tags(
@@ -1446,6 +1457,26 @@ class DatabunkerproAPI:
             "limit": limit,
         }
         return self._make_request("BulkListAllAuditEvents", data, request_metadata)
+
+    def bulk_list_files_by_tag(
+        self,
+        unlock_uuid: str,
+        tag: str,
+        offset: int = 0,
+        limit: int = 10,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """List files carrying a tag, across all users in the tenant.
+
+        Requires the list_users configuration flag. A single tag only.
+        """
+        data = {
+            "unlockuuid": unlock_uuid,
+            "tag": tag,
+            "offset": offset,
+            "limit": limit,
+        }
+        return self._make_request("BulkListFilesByTag", data, request_metadata)
 
     def bulk_list_tokens(
         self,

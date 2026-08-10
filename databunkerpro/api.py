@@ -121,6 +121,15 @@ class BasicOptions(TypedDict, total=False):
     slidingtime: Optional[str]
 
 
+class FileOptions(TypedDict, total=False):
+    """Options for storing a file."""
+
+    mimetype: Optional[str]
+    tags: Optional[Union[List[str], str]]
+    finaltime: Optional[str]
+    slidingtime: Optional[str]
+
+
 class TokenOptions(TypedDict, total=False):
     """Options for token operations."""
 
@@ -493,45 +502,6 @@ class DatabunkerproAPI:
         }
         return self._make_request("UserListVersions", data, request_metadata)
 
-    # User Authentication
-    def prelogin_user(
-        self,
-        mode: str,
-        identity: str,
-        code: str,
-        captchacode: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """Perform pre-login operations for a user."""
-        data = {
-            "mode": mode,
-            "identity": identity,
-            "code": code,
-            "captchacode": captchacode,
-        }
-        return self._make_request("UserPrelogin", data, request_metadata)
-
-    def login_user(
-        self,
-        mode: str,
-        identity: str,
-        smscode: str,
-        request_metadata: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """Log in a user with SMS verification."""
-        data = {
-            "mode": mode,
-            "identity": identity,
-            "smscode": smscode,
-        }
-        return self._make_request("UserLogin", data, request_metadata)
-
-    def create_captcha(
-        self, request_metadata: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """Create a captcha for user verification."""
-        return self._make_request("CaptchaCreate", None, request_metadata)
-
     def create_user_x_token(
         self,
         mode: str,
@@ -712,6 +682,132 @@ class DatabunkerproAPI:
             "appname": appname,
         }
         return self._make_request("AppdataListVersions", data, request_metadata)
+
+    def delete_app_data(
+        self,
+        mode: str,
+        identity: str,
+        appname: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Delete application data for a user."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "appname": appname,
+        }
+        return self._make_request("AppdataDelete", data, request_metadata)
+
+    # File Storage
+    def create_file(
+        self,
+        mode: str,
+        identity: str,
+        filename: str,
+        filedata: str,
+        options: Optional[FileOptions] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Store an encrypted file for a user.
+
+        Args:
+            mode: User identification mode (login, token, email, phone, custom)
+            identity: User identifier corresponding to the mode
+            filename: Name of the file
+            filedata: File content, base64-encoded
+            options: Optional mimetype, tags, slidingtime, finaltime
+            request_metadata: Additional metadata to include with the request
+
+        Returns:
+            The stored file information, including its fileuuid
+        """
+        data: Dict[str, Any] = {
+            "mode": mode,
+            "identity": identity,
+            "filename": filename,
+            "filedata": filedata,
+        }
+        if options:
+            for key in ("mimetype", "tags", "slidingtime", "finaltime"):
+                if key in options:
+                    data[key] = options[key]
+        return self._make_request("FileCreate", data, request_metadata)
+
+    def get_file(
+        self,
+        mode: str,
+        identity: str,
+        fileuuid: Optional[str] = None,
+        filename: Optional[str] = None,
+        raw: Optional[bool] = None,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Get a user file, selected by fileuuid or filename.
+
+        At least one of fileuuid or filename is required. When selecting by
+        filename, the most recently created file with that name is returned.
+        """
+        data: Dict[str, Any] = {
+            "mode": mode,
+            "identity": identity,
+        }
+        if fileuuid is not None:
+            data["fileuuid"] = fileuuid
+        if filename is not None:
+            data["filename"] = filename
+        if raw is not None:
+            data["raw"] = raw
+        return self._make_request("FileGet", data, request_metadata)
+
+    def list_user_files(
+        self,
+        mode: str,
+        identity: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """List the metadata of all files owned by a user."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+        }
+        return self._make_request("FileListUserFiles", data, request_metadata)
+
+    def replace_file_tags(
+        self,
+        mode: str,
+        identity: str,
+        fileuuid: str,
+        tags: Union[List[str], str],
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Replace the complete tag set on a file.
+
+        The supplied list is authoritative — tags not included are removed.
+        Tags are lowercased and de-duplicated, must match
+        ^[a-z0-9][a-z0-9._-]{0,49}$, and at most 16 are kept.
+        """
+        data: Dict[str, Any] = {
+            "mode": mode,
+            "identity": identity,
+            "fileuuid": fileuuid,
+            "tags": tags,
+        }
+        return self._make_request("FileReplaceTags", data, request_metadata)
+
+    def delete_file(
+        self,
+        mode: str,
+        identity: str,
+        fileuuid: str,
+        request_metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Delete a user file."""
+        data = {
+            "mode": mode,
+            "identity": identity,
+            "fileuuid": fileuuid,
+        }
+        return self._make_request("FileDelete", data, request_metadata)
 
     # Legal Basis Management
     def create_legal_basis(
@@ -1376,15 +1472,6 @@ class DatabunkerproAPI:
             "tokens": tokens,
         }
         return self._make_request("BulkDeleteTokens", data, request_metadata)
-
-    # System Configuration
-    def get_ui_conf(self) -> Dict[str, Any]:
-        """Get UI configuration."""
-        return self._make_request("TenantGetUIConf")
-
-    def get_tenant_conf(self) -> Dict[str, Any]:
-        """Get tenant configuration."""
-        return self._make_request("TenantGetUIConf")
 
     def get_user_html_report(
         self,

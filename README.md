@@ -128,12 +128,45 @@ print(f"Created token in base format (credit card): {token_result['tokenbase']}"
 print(f"Created token in uuid format: {token_result['tokenuuid']}")
 ```
 
+### File storage
+
+Files are attached to a user and can carry tags for later lookup:
+
+```python
+# Replace the complete tag set on a file. This overwrites, it does not merge.
+api.replace_file_tags("email", "john@pythontest.com", file["fileuuid"], ["archived"])
+
+api.delete_file("email", "john@pythontest.com", file["fileuuid"])
+```
+
+Files can also be listed by tag across every user in the tenant, which needs a
+bulk-unlock uuid first:
+
+```python
+unlock = api.bulk_list_unlock()
+tagged = api.bulk_list_files_by_tag(unlock["unlockuuid"], "archived", 0, 100)
+```
+
 ## Features
 
-- User Management (create, read, update, delete)
-- Credit Card Management
-- Token Management
-- System Statistics
+- User Management
+- App Data Management
+- File Storage
+- Tokenization
+- Legal Basis & Agreement Management
+- Processing Activity Management
+- Group Management
+- Role & Policy Management
+- Session Management
+- Shared Records
+- Bulk Operations
+- Audit Management
+- Tenant Management
+- Authentication & Access Tokens
+- System Operations
+
+Python-specific:
+
 - Type hints and comprehensive documentation
 - Error handling and validation
 - Continuous security scanning (Semgrep SAST, pinned CI actions)

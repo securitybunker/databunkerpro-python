@@ -3,7 +3,7 @@
 import json
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Optional, TypedDict, Union, cast
+from typing import Any, Dict, Iterable, List, Mapping, Optional, TypedDict, Union, cast
 
 import requests
 
@@ -160,6 +160,24 @@ class PatchOperation(TypedDict, total=False):
     op: str  # Operation type (e.g., 'add', 'replace', 'remove')
     path: str  # JSON path to the field to modify
     value: Optional[Any]  # New value for the field
+
+
+def _add_options(
+    data: Dict[str, Any], options: Optional[Mapping[str, Any]], keys: Iterable[str]
+) -> Dict[str, Any]:
+    """Copy the supplied `keys` from `options` into `data`, skipping unset ones.
+
+    An option the caller left out must stay out of the request body. Python's None
+    serializes to JSON null, and the server treats a null as a supplied value: it
+    validates `appname: null` and rejects it, and it panics on `requiredflag: null`.
+    Other language SDKs avoid this for free — JSON.stringify drops undefined — so
+    the guard has to be explicit here.
+    """
+    for key in keys:
+        value = options.get(key) if options else None
+        if value is not None:
+            data[key] = value
+    return data
 
 
 class DatabunkerproAPI:
@@ -827,16 +845,20 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a legal basis for data processing."""
-        data = {
-            "brief": options.get("brief"),
-            "status": options.get("status"),
-            "module": options.get("module"),
-            "fulldesc": options.get("fulldesc"),
-            "shortdesc": options.get("shortdesc"),
-            "basistype": options.get("basistype"),
-            "requiredmsg": options.get("requiredmsg"),
-            "requiredflag": options.get("requiredflag"),
-        }
+        data = _add_options(
+            {},
+            options,
+            (
+                "brief",
+                "status",
+                "module",
+                "fulldesc",
+                "shortdesc",
+                "basistype",
+                "requiredmsg",
+                "requiredflag",
+            ),
+        )
         return self._make_request("LegalBasisCreate", data, request_metadata)
 
     def update_legal_basis(
@@ -985,13 +1007,9 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new processing activity."""
-        data = {
-            "activity": options.get("activity"),
-            "title": options.get("title"),
-            "script": options.get("script"),
-            "fulldesc": options.get("fulldesc"),
-            "applicableto": options.get("applicableto"),
-        }
+        data = _add_options(
+            {}, options, ("activity", "title", "script", "fulldesc", "applicableto")
+        )
         return self._make_request("ProcessingActivityCreate", data, request_metadata)
 
     def update_processing_activity(
@@ -1058,11 +1076,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new group."""
-        data = {
-            "groupname": options.get("groupname"),
-            "groupdesc": options.get("groupdesc"),
-            "grouptype": options.get("grouptype"),
-        }
+        data = _add_options({}, options, ("groupname", "groupdesc", "grouptype"))
         return self._make_request("GroupCreate", data, request_metadata)
 
     def get_group(
@@ -1226,11 +1240,7 @@ class DatabunkerproAPI:
         self, options: TenantOptions, request_metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Create a new tenant."""
-        data = {
-            "tenantname": options.get("tenantname"),
-            "tenantorg": options.get("tenantorg"),
-            "email": options.get("email"),
-        }
+        data = _add_options({}, options, ("tenantname", "tenantorg", "email"))
         return self._make_request("TenantCreate", data, request_metadata)
 
     def get_tenant(
@@ -1288,10 +1298,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new role."""
-        data = {
-            "rolename": options.get("rolename"),
-            "roledesc": options.get("roledesc"),
-        }
+        data = _add_options({}, options, ("rolename", "roledesc"))
         return self._make_request("RoleCreate", data, request_metadata)
 
     def update_role(
@@ -1333,11 +1340,7 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Create a new policy."""
-        data = {
-            "policyname": options.get("policyname"),
-            "policydesc": options.get("policydesc"),
-            "policy": options.get("policy"),
-        }
+        data = _add_options({}, options, ("policyname", "policydesc", "policy"))
         return self._make_request("PolicyCreate", data, request_metadata)
 
     def update_policy(
@@ -1729,14 +1732,8 @@ class DatabunkerproAPI:
         request_metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Creates a shared record for a user."""
-        data = {
-            "mode": mode,
-            "identity": identity,
-            "fields": options.get("fields") if options else None,
-            "partner": options.get("partner") if options else None,
-            "appname": options.get("appname") if options else None,
-            "finaltime": options.get("finaltime") if options else None,
-        }
+        data: Dict[str, Any] = {"mode": mode, "identity": identity}
+        _add_options(data, options, ("fields", "partner", "appname", "finaltime"))
         return self._make_request("SharedRecordCreate", data, request_metadata)
 
     def get_shared_record(

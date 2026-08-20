@@ -274,11 +274,9 @@ class TestFieldTokenization(SandboxTestCase):
     def _token_type(field: str) -> str:
         """Every value is stringified and tokenized as a string.
 
-        `text` is the API's string type, and `string` is an accepted alias for it.
-        The test sends the canonical `text`, which every server version understands;
-        test_string_is_an_alias_for_text covers the alias itself. Email, dates and
-        timestamps all go through it rather than a specialised type. The credit card
-        is the exception: it is the one field where format preservation applies.
+        `text` is the API's string type. Email, dates and timestamps all go through
+        it rather than a specialised type. The credit card is the exception: it is
+        the one field where format preservation applies.
         """
         return "creditcard" if field == "creditcard" else "text"
 
@@ -347,29 +345,6 @@ class TestFieldTokenization(SandboxTestCase):
         self.assertEqual(first.get("status"), "ok", f"{first}")
         self.assertEqual(second.get("status"), "ok", f"{second}")
         self.assertNotEqual(first["tokenuuid"], second["tokenuuid"])
-
-    def test_string_is_an_alias_for_text(self):
-        """ "string" and "text" are one type — same canonical name, same token.
-
-        Skips on servers predating the alias, so the file works against a
-        pro.databunker.org that has not picked up the change yet.
-        """
-        value = f"alias-probe-{self.seed}"
-        canonical = self.api.create_token("text", value, {"unique": True})
-        self.assertEqual(canonical.get("status"), "ok", f"{canonical}")
-
-        alias = self.api.create_token("string", value, {"unique": True})
-        if alias.get("message") == "Wrong token type":
-            self.skipTest("server does not support the `string` alias yet")
-
-        self.assertEqual(alias.get("status"), "ok", f"{alias}")
-        self.assertEqual(
-            alias["tokenuuid"],
-            canonical["tokenuuid"],
-            "`string` did not resolve to the same token as `text`",
-        )
-        stored = self.api.get_token(alias["tokenuuid"])
-        self.assertEqual(stored.get("tokentype"), "text", f"{stored}")
 
     def test_unknown_token_types_are_rejected(self):
         """The accepted set is closed — these are not token types."""

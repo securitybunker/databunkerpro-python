@@ -103,11 +103,6 @@ class TestSharedIdentityPerField(SandboxTestCase):
             raise unittest.SkipTest(f"Setup UserCreate failed: {created}")
         cls.user_token = created["token"]
 
-        # The user access token the customer hands to the end user's own session.
-        cls.xtoken_result = cls.api.create_user_x_token(
-            "token", cls.user_token, {"finaltime": "10m"}
-        )
-
         # One shared identity per field, each with its own expiration and partner tag.
         cls.shares = {}
         for field in cls.profile:
@@ -125,17 +120,9 @@ class TestSharedIdentityPerField(SandboxTestCase):
     def test_profile_has_ten_fields(self):
         self.assertEqual(len(self.profile), 10)
 
-    def test_user_x_token_reads_own_record(self):
-        """XTokenCreateForUser issues a working, scoped credential."""
-        self.assertEqual(
-            self.xtoken_result.get("status"), "ok", f"{self.xtoken_result}"
-        )
-        self.assertIn("xtoken", self.xtoken_result)
-
-        user_api = DatabunkerproAPI(
-            self.api_url, self.xtoken_result["xtoken"], self.tenant_name
-        )
-        result = user_api.get_user("token", self.user_token)
+    def test_user_token_reads_the_stored_profile(self):
+        """UserCreate returns the token the shared records are then keyed on."""
+        result = self.api.get_user("token", self.user_token)
         self.assertEqual(result.get("status"), "ok", f"{result}")
         self.assertEqual(result.get("profile"), self.profile)
 

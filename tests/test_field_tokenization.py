@@ -27,12 +27,6 @@ import requests
 
 from databunkerpro import DatabunkerproAPI
 
-# The server accepts creditcard, email, text (alias: string), ssn, uuid, unixtimestamp,
-# uint64 and uint32. Of those, only these four actually return a non-empty, format-
-# preserving `tokenbase`; email, ssn and uuid come back with none despite not being
-# plain strings. See the mapping in _token_type below.
-FORMAT_PRESERVING_TYPES = {"creditcard", "unixtimestamp", "uint64", "uint32"}
-
 
 def make_profile(seed: int) -> dict:
     """A 10-field profile — the customer's record shape."""
@@ -337,11 +331,11 @@ class TestFieldTokenization(SandboxTestCase):
         self.assertEqual(result.get("status"), "ok", f"{result}")
         self.assertEqual(result.get("record"), self.profile["creditcard"])
 
-    def test_only_creditcard_returns_a_format_preserving_token(self):
-        """Documents current coverage: email/text get a UUID and an empty tokenbase."""
+    def test_only_the_card_returns_a_format_preserving_token(self):
+        """The card gets a `tokenbase`; every string field gets a UUID token only."""
         for field, result in self.tokens.items():
             with self.subTest(field=field):
-                if self._token_type(field) in FORMAT_PRESERVING_TYPES:
+                if field == "creditcard":
                     self.assertTrue(result.get("tokenbase"), f"{field}: {result}")
                 else:
                     self.assertFalse(result.get("tokenbase"), f"{field}: {result}")

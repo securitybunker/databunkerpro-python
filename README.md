@@ -191,6 +191,16 @@ pip install -e ".[dev]"
 pytest
 ```
 
+### Local stress testing
+
+The stress-test scripts live in `stress-test/`. Run them from that directory, and only against a local instance:
+
+- `bulk_user_creator.py` creates 1,000,000 users (250 batches of 4,000, each with 119 profile fields) and appends 10 sample tokens per batch to `user_tokens.txt`.
+- `bulk_user_fetcher.py` fetches every token in `user_tokens.txt` concurrently, in batches of 100.
+- `random_user_fetcher.py` repeatedly fetches random users from `user_tokens.txt`.
+
+They read `DATABUNKER_API_URL` (default `http://localhost`), `DATABUNKER_API_TOKEN` and `DATABUNKER_TENANT_NAME`. Never point them at a shared or production server.
+
 ## Security
 
 This library is scanned on every push and pull request, with a weekly scheduled sweep to catch drift:

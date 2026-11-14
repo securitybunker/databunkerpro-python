@@ -23,19 +23,22 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: 3.15",
     ],
     python_requires=">=3.10",
     install_requires=[
         "requests>=2.34.2",
+        "urllib3>=2.8.0",
     ],
     extras_require={
         "dev": [
-            "pytest>=9.1.1",
+            "pytest>=9.2.0",
             "pytest-cov>=7.1.0",
-            "black>=26.5.1",
-            "isort>=8.0.1",
-            "mypy>=2.3.1",
-            "types-requests>=2.33.0.20260712",
+            "black>=26.10.1",
+            "isort>=9.0.2",
+            "mypy>=2.4.1",
+            "types-requests>=2.33.0.20261030",
         ],
     },
 )

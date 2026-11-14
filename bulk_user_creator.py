@@ -7,7 +7,6 @@ from databunkerpro import DatabunkerproAPI
 api_url = os.getenv("DATABUNKER_API_URL", "http://localhost")
 api_token = os.getenv("DATABUNKER_API_TOKEN", "dcc33285-4bfd-6e3b-eeb8-05e879afa943")
 tenant_name = os.getenv("DATABUNKER_TENANT_NAME", "")
-print(api_token)
 
 
 def generate_random_user_data():

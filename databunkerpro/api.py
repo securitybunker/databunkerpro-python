@@ -3,9 +3,23 @@
 import json
 import re
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Mapping, Optional, TypedDict, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    TypedDict,
+    Union,
+    cast,
+)
 
 import requests
+
+#: (connect, read) seconds: an unreachable host fails fast, a slow bulk call still has time
+DEFAULT_TIMEOUT: Tuple[float, float] = (10.0, 300.0)
 
 
 # Type definitions for better type safety and documentation
@@ -184,12 +198,20 @@ class DatabunkerproAPI:
     """Main client class for interacting with the DatabunkerPro API."""
 
     def __init__(
-        self, base_url: str, x_bunker_token: str = "", x_bunker_tenant: str = ""
+        self,
+        base_url: str,
+        x_bunker_token: str = "",
+        x_bunker_tenant: str = "",
+        timeout: Optional[Union[float, Tuple[float, float]]] = DEFAULT_TIMEOUT,
     ):
-        """Initialize the DatabunkerPro API client."""
+        """Initialize the DatabunkerPro API client.
+
+        timeout is passed to requests: seconds, or (connect, read); None waits forever.
+        """
         self.base_url = base_url.rstrip("/")
         self.x_bunker_token = x_bunker_token
         self.x_bunker_tenant = x_bunker_tenant
+        self.timeout = timeout
 
     def _make_request(
         self,
@@ -214,20 +236,30 @@ class DatabunkerproAPI:
             body = None
 
         try:
-            response = requests.post(url, headers=headers, data=body)
-            result: Dict[str, Any] = response.json()
-
-            if not response.ok:
-                if result.get("status"):
-                    return result
-                else:
-                    return {
-                        "status": "error",
-                        "message": result.get("message", "API request failed"),
-                    }
-            return result
+            response = requests.post(
+                url, headers=headers, data=body, timeout=self.timeout
+            )
         except requests.exceptions.RequestException as e:
             return {"status": "error", "message": f"Error making request: {str(e)}"}
+
+        try:
+            result: Dict[str, Any] = response.json()
+        except ValueError:
+            # a non-JSON reply, such as a proxy's HTML error page
+            return {
+                "status": "error",
+                "message": f"Invalid JSON response (HTTP {response.status_code})",
+                "httpcode": response.status_code,
+            }
+
+        if not response.ok:
+            if not result.get("status"):
+                result = {
+                    "status": "error",
+                    "message": result.get("message", "API request failed"),
+                }
+            result["httpcode"] = response.status_code
+        return result
 
     def raw_request(
         self,
@@ -249,7 +281,7 @@ class DatabunkerproAPI:
             body = json.dumps(body_data)
         else:
             body = None
-        response = requests.post(url, headers=headers, data=body)
+        response = requests.post(url, headers=headers, data=body, timeout=self.timeout)
         return response.content
 
     # User Management

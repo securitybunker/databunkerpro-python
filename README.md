@@ -147,6 +147,29 @@ unlock = api.bulk_list_unlock()
 tagged = api.bulk_list_files_by_tag(unlock["unlockuuid"], "archived", 0, 100)
 ```
 
+### Errors and timeouts
+
+Calls do not raise on API errors. They return `{"status": "error", "message": ...}`, and when the server
+answered, `httpcode` holds its HTTP status, so you can tell cases apart without matching message text. The
+[error reference](https://docs.databunker.org/pro/api/errors) lists the status codes and common messages.
+
+```python
+result = api.get_user("email", "nobody@example.com")
+if result["status"] == "error":
+    if result.get("httpcode") == 404:
+        ...  # no such user
+    else:
+        raise RuntimeError(result["message"])  # 403 bad token, 5xx, or no httpcode: no response at all
+```
+
+Every request has a timeout: 10 seconds to connect and 300 seconds to read by default. A call that times out
+returns an error without `httpcode`. Pass `timeout` to change it, as seconds or a `(connect, read)` pair;
+`None` waits forever:
+
+```python
+api = DatabunkerproAPI(base_url, x_bunker_token=token, timeout=(5, 60))
+```
+
 ## Features
 
 - User Management
